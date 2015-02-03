@@ -25,20 +25,22 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int action_settings=0x7f09000d;
-        public static final int adminBtn=0x7f09000b;
+        public static final int action_settings=0x7f09000f;
+        public static final int adminBtn=0x7f09000e;
         public static final int cancelBtn=0x7f090003;
-        public static final int cancelChangesBtn=0x7f090008;
+        public static final int cancelChangesBtn=0x7f09000b;
         public static final int fragmentsContainer=0x7f090000;
         public static final int insertPasswordEditTxt=0x7f090002;
         public static final int insertPasswordLabel=0x7f090001;
-        public static final int mWebView=0x7f09000a;
-        public static final int saveChangesBtn=0x7f090007;
+        public static final int mWebView=0x7f09000d;
+        public static final int saveChangesBtn=0x7f09000a;
         public static final int textView1=0x7f090004;
         public static final int urlEditLabel=0x7f090005;
         public static final int urlEditText=0x7f090006;
-        public static final int webViewFragment=0x7f090009;
-        public static final int zoomControls1=0x7f09000c;
+        public static final int webViewFragment=0x7f09000c;
+        public static final int zoomControls=0x7f090009;
+        public static final int zoomLabel=0x7f090007;
+        public static final int zoomPercentage=0x7f090008;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;

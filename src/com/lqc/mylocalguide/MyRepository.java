@@ -7,6 +7,15 @@ public class MyRepository extends Application {
 	public static MyRepository mInstance;
 	
 	private String url = "http://www.my-local.guide";
+	private int scalePercentage = 100;
+
+	public int getScale() {
+		return scalePercentage;
+	}
+
+	public void setScale(int scale) {
+		this.scalePercentage = scale;
+	}
 
 	@Override
 	public void onCreate() {
