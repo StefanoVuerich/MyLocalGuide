@@ -18,10 +18,11 @@ import android.widget.ZoomControls;
 public class AdministrationFragment extends Fragment {
 
 	private EditText urlEditTxt;
-	private Button save, cancel;
+	private Button save, cancel, exitApp;
 	private OnActionSelected mCallback;
 	private TextView zoomPercentage;
 	private ZoomControls zoomControls;
+	int currentScale;
 
 	public interface OnActionSelected {
 
@@ -46,6 +47,8 @@ public class AdministrationFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.manager_fragment_layout,
 				container, false);
 
+		currentScale = MyRepository.get().getScale();
+		
 		urlEditTxt = (EditText) rootView.findViewById(R.id.urlEditText);
 		urlEditTxt.setText(MyRepository.get().getUrl());
 
@@ -89,6 +92,15 @@ public class AdministrationFragment extends Fragment {
 				mCallback.OnCancel();
 			}
 		});
+		
+		exitApp = (Button)rootView.findViewById(R.id.exitAppButton);
+		exitApp.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				System.exit(0);
+			}
+		});
 
 		return rootView;
 	}
@@ -103,7 +115,6 @@ public class AdministrationFragment extends Fragment {
 
 	private void zoomIn() {
 
-		int currentScale = MyRepository.get().getScale();
 		int maxScaling = ScalingHandler.getInstance().getMaxScaling();
 		if (maxScaling - currentScale >= 10) {
 			int newScale = currentScale
@@ -114,8 +125,7 @@ public class AdministrationFragment extends Fragment {
 	}
 
 	private void zoomOut() {
-		int currentScale = MyRepository.get().getScale();
-		int maxScaling = ScalingHandler.getInstance().getMaxScaling();
+
 		if (currentScale >= 10) {
 			int newScale = currentScale
 					- ScalingHandler.getInstance().getScaleDifference();
