@@ -13,72 +13,77 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
-public class CheckPasswordDialog extends DialogFragment implements TextWatcher{
-	
+public class CheckPasswordDialog extends DialogFragment {
+
+	public static final String TAG = "CheckPasswordDialog";
+	public static final String CHECKPASSWORD_DIALOG_FRAGMENT_FLAG = "CheckPasswordDialogFragmentFLAG";
+	private String mode_FLAG;
+
 	private ICheckPassword mCallback;
 
-	public interface ICheckPassword {	
-		
-		public void checkPassword(String password);
+	public interface ICheckPassword {
+
+		public void onLogin(String mode_flag, String password);
 		public void onCancel();
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-		
-		if(activity instanceof ICheckPassword) {
-			mCallback = (ICheckPassword)activity;
+
+		if (activity instanceof ICheckPassword) {
+			mCallback = (ICheckPassword) activity;
 		}
 	}
-	
-	public static CheckPasswordDialog get() {
+
+	public static CheckPasswordDialog get(String flag) {
 		CheckPasswordDialog checkPasswordDialog = new CheckPasswordDialog();
+		Bundle vBundle = new Bundle();
+		vBundle.putString(CHECKPASSWORD_DIALOG_FRAGMENT_FLAG, flag);
+		checkPasswordDialog.setArguments(vBundle);
 		return checkPasswordDialog;
 	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
+
+		Bundle vBundle = getArguments();
+		if (vBundle != null) {
+			mode_FLAG = vBundle.getString(CHECKPASSWORD_DIALOG_FRAGMENT_FLAG);
+
+			Toast.makeText(getActivity(), mode_FLAG, Toast.LENGTH_LONG).show();
+		}
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-		View v = inflater.inflate(R.layout.check_password_dialog_layout, container, false);
-		View passwordLabel = v.findViewById(R.id.insertPasswordLabel);
-		View passwordEditText = v.findViewById(R.id.insertPasswordEditTxt);
-		View cancelBtn = v.findViewById(R.id.cancelBtn);
-		final EditText passwordEditTextCst = ((EditText)passwordEditText);
-		final Button cancelBtnCst = ((Button)cancelBtn);
+		View v = inflater.inflate(R.layout.check_password_dialog_layout,
+				container, false);
 		
-		passwordEditTextCst.addTextChangedListener(this);	
+		View passwordEditText = v.findViewById(R.id.insertPasswordEditTxt);
+		View loginBtn = v.findViewById(R.id.loginBtn);
+		View cancelBtn = v.findViewById(R.id.cancelBtn);
+		
+		final EditText passwordEditTextCst = ((EditText) passwordEditText);
+		final Button cancelBtnCst = ((Button) cancelBtn);
+		final Button loginBtnCst = ((Button) loginBtn);
+		
+		loginBtnCst.setOnClickListener(new View.OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				mCallback.onLogin(mode_FLAG, passwordEditTextCst.getText().toString());;
+			}
+		});
+		
 		cancelBtnCst.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
 				mCallback.onCancel();
 			}
 		});
-		
+
 		return v;
-	}
-
-	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count,
-			int after) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		if(mCallback != null) {
-			mCallback.checkPassword(s.toString());
-		}
-	}
-
-	@Override
-	public void afterTextChanged(Editable s) {
-		// TODO Auto-generated method stub
-		
 	}
 }

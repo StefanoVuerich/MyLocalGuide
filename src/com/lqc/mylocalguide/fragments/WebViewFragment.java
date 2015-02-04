@@ -12,20 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.webkit.WebView.FindListener;
 import android.widget.Button;
 
 public class WebViewFragment extends Fragment {
 
-	public static final String SHOW_PASSWORD_DIALOG = "SHOW_PASSWORD_DIALOG";
 	private WebView webView;
-	private Button adminBtn;
-
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		// webView = (WebView) rootView.findViewById(R.id.mWebView);
-		// webView.setInitialScale(50);
-	}
+	private Button adminBtn, exitBtn;
 
 	@SuppressLint("SetJavaScriptEnabled")
 	@Override
@@ -51,7 +44,16 @@ public class WebViewFragment extends Fragment {
 
 			@Override
 			public void onClick(View v) {
-				showCheckPasswordDialog();
+				showCheckPasswordDialog("admin");
+			}
+		});
+		
+		exitBtn = (Button)rootView.findViewById(R.id.exitBtn);
+		exitBtn.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				showCheckPasswordDialog("exit");
 			}
 		});
 
@@ -63,9 +65,9 @@ public class WebViewFragment extends Fragment {
 		return fr;
 	}
 
-	private void showCheckPasswordDialog() {
+	private void showCheckPasswordDialog(String flag) {
 
-		CheckPasswordDialog checkPasswordDialog = CheckPasswordDialog.get();
-		checkPasswordDialog.show(getFragmentManager(), SHOW_PASSWORD_DIALOG);
+		CheckPasswordDialog checkPasswordDialog = CheckPasswordDialog.get(flag);
+		checkPasswordDialog.show(getFragmentManager(), CheckPasswordDialog.TAG);
 	}
 }

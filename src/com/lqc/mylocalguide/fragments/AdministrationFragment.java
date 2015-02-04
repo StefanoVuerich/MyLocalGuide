@@ -17,12 +17,23 @@ import android.widget.ZoomControls;
 
 public class AdministrationFragment extends Fragment {
 
-	private EditText urlEditTxt;
+	private EditText urlEditTxt, newAdminPassword, confirmNewAdminPassword,
+			newUserPassword, confirmNewUserPassword;
 	private Button save, cancel, exitApp;
 	private OnActionSelected mCallback;
 	private TextView zoomPercentage;
 	private ZoomControls zoomControls;
 	int currentScale;
+	private final static String ADMINISTRATION_FRAGMENT_FLAG = "AdministrationFragmentFLAG";
+
+	public AdministrationFragment getInstance(String flag) {
+
+		AdministrationFragment administrationFragment = new AdministrationFragment();
+		Bundle vBundle = new Bundle();
+		vBundle.putString(ADMINISTRATION_FRAGMENT_FLAG, flag);
+		administrationFragment.setArguments(vBundle);
+		return administrationFragment;
+	}
 
 	public interface OnActionSelected {
 
@@ -48,7 +59,7 @@ public class AdministrationFragment extends Fragment {
 				container, false);
 
 		currentScale = MyRepository.get().getScale();
-		
+
 		urlEditTxt = (EditText) rootView.findViewById(R.id.urlEditText);
 		urlEditTxt.setText(MyRepository.get().getUrl());
 
@@ -71,7 +82,12 @@ public class AdministrationFragment extends Fragment {
 				zoomOut();
 			}
 		});
-
+		
+		newAdminPassword = (EditText)rootView.findViewById(R.id.newAdminPassTxtEdit);
+		confirmNewAdminPassword = (EditText)rootView.findViewById(R.id.confirmNewAdminPassTxtEdit);
+		newUserPassword = (EditText)rootView.findViewById(R.id.newUserPassTxtEdit);
+		confirmNewUserPassword = (EditText)rootView.findViewById(R.id.confirmNewUserPassTxtEdit);
+		
 		save = (Button) rootView.findViewById(R.id.saveChangesBtn);
 		save.setOnClickListener(new View.OnClickListener() {
 
@@ -92,13 +108,13 @@ public class AdministrationFragment extends Fragment {
 				mCallback.OnCancel();
 			}
 		});
-		
-		exitApp = (Button)rootView.findViewById(R.id.exitAppButton);
+
+		exitApp = (Button) rootView.findViewById(R.id.exitAppButton);
 		exitApp.setOnClickListener(new View.OnClickListener() {
-			
+
 			@Override
 			public void onClick(View v) {
-				System.exit(0);
+				showConfirmExitDialog();
 			}
 		});
 
@@ -132,5 +148,13 @@ public class AdministrationFragment extends Fragment {
 			MyRepository.get().setScale(newScale);
 			zoomPercentage.setText("" + newScale);
 		}
+	}
+
+	private void showConfirmExitDialog() {
+		ConfirmApplicationExitFragment confirmExitDialog = ConfirmApplicationExitFragment
+				.get();
+		confirmExitDialog.show(getFragmentManager(),
+				ConfirmApplicationExitFragment.getTAG());
+
 	}
 }

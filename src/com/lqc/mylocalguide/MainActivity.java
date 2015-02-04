@@ -3,6 +3,7 @@ package com.lqc.mylocalguide;
 import com.lqc.mylocalguide.fragments.AdministrationFragment;
 import com.lqc.mylocalguide.fragments.AdministrationFragment.OnActionSelected;
 import com.lqc.mylocalguide.fragments.CheckPasswordDialog;
+import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment.IExitApplicationConfirm;
 import com.lqc.mylocalguide.fragments.WebViewFragment;
 import com.lqc.mylocalguide.fragments.CheckPasswordDialog.ICheckPassword;
 
@@ -11,11 +12,12 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.view.ViewDebug.FlagToString;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements ICheckPassword , OnActionSelected{
+public class MainActivity extends Activity implements ICheckPassword,
+		OnActionSelected, IExitApplicationConfirm {
 
-	private static final String THE_PASSWORD = "password";
 	public static final String WEB_VIEW_FRAGMENT = "WEB_VIEW_FRAGMENT";
 
 	@Override
@@ -28,28 +30,44 @@ public class MainActivity extends Activity implements ICheckPassword , OnActionS
 	}
 
 	@Override
-	public void checkPassword(String password) {
+	public void onLogin(String mode_flag, String password) {
+
+		if (mode_flag.equals("exit")) 
+		{
+			if (password != null && (password.equals(MyRepository.get().getADMIN_PASSWORD()) || password.equals(MyRepository.get().getUSER_PASSWORD()))) 
+			{
+				Toast.makeText(MainActivity.this,
+						"RIGHT PASSWORD Going to exit", Toast.LENGTH_SHORT)
+						.show();
+				closeCheckPasswordDialog();
+				onExitApplication();
+			} 
+
 			
-		if(password != null && password.equals(THE_PASSWORD)) {
-			Toast.makeText(MainActivity.this, "RIGHT PASSWORD", Toast.LENGTH_SHORT).show();
-			closeCheckPasswordDialog();
-			
-			Fragment fr = new AdministrationFragment();
-			FragmentManager fm = getFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			ft.replace(R.id.fragmentsContainer, fr);		
-			ft.commit();
+		} else if (mode_flag.equals("admin")) {
+			if (password != null && password.equals(MyRepository.get().getADMIN_PASSWORD())) {
+				Toast.makeText(MainActivity.this,
+						"RIGHT PASSWORD Going to admin", Toast.LENGTH_SHORT)
+						.show();
+				closeCheckPasswordDialog();
+				Fragment fr = new AdministrationFragment();
+				FragmentManager fm = getFragmentManager();
+				FragmentTransaction ft = fm.beginTransaction();
+				ft.replace(R.id.fragmentsContainer, fr);
+				ft.commit();
+			}
 		}
 	}
 
 	@Override
 	public void onCancel() {
 		closeCheckPasswordDialog();
-		
+
 	}
-	
+
 	private void closeCheckPasswordDialog() {
-		CheckPasswordDialog checkPasswordDialog = (CheckPasswordDialog) getFragmentManager().findFragmentByTag(WebViewFragment.SHOW_PASSWORD_DIALOG);
+		CheckPasswordDialog checkPasswordDialog = (CheckPasswordDialog) getFragmentManager()
+				.findFragmentByTag(CheckPasswordDialog.TAG);
 		checkPasswordDialog.dismiss();
 	}
 
@@ -62,7 +80,7 @@ public class MainActivity extends Activity implements ICheckPassword , OnActionS
 	public void OnCancel() {
 		showWebViewFragment();
 	}
-	
+
 	public void showWebViewFragment() {
 		Fragment fragment = WebViewFragment.get();
 
@@ -70,5 +88,14 @@ public class MainActivity extends Activity implements ICheckPassword , OnActionS
 				.add(R.id.fragmentsContainer, fragment, WEB_VIEW_FRAGMENT)
 				.commit();
 	}
-	
+
+	@Override
+	public void onExitApplication() {
+		System.exit(0);
+	}
+
+	@Override
+	public void onCancelExit() {
+		// Do nothing
+	}
 }
