@@ -1,10 +1,11 @@
 package com.lqc.mylocalguide.fragments;
 
 import com.lqc.mylocalguide.R;
-import com.lqc.mylocalguide.MyRepository;
+import com.lqc.mylocalguide.storage.ConfigurationStorage;
 
 import android.annotation.SuppressLint;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
@@ -12,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import android.webkit.WebView.FindListener;
 import android.widget.Button;
 
 public class WebViewFragment extends Fragment {
@@ -28,16 +28,13 @@ public class WebViewFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.webview_fragment_layout,
 				container, false);
 
-		DisplayMetrics metrics = getResources().getDisplayMetrics();
-		metrics.density = 1;
-		metrics.scaledDensity = 1;
-		getResources().updateConfiguration(null, metrics);
-
+		SharedPreferences settings = getActivity().getSharedPreferences(ConfigurationStorage.getInstance().STORAGE, 0);
+		
 		webView = (WebView) rootView.findViewById(R.id.mWebView);
 		webView.getSettings().setJavaScriptEnabled(true);
-		webView.setInitialScale(MyRepository.get().getScale());
+		webView.setInitialScale(settings.getInt(ConfigurationStorage.ZOOM, 100));
 		webView.setWebViewClient(new WebViewClient() {});
-		webView.loadUrl(MyRepository.get().getUrl());
+		webView.loadUrl(settings.getString(ConfigurationStorage.URL, ""));
 
 		adminBtn = (Button) rootView.findViewById(R.id.adminBtn);
 		adminBtn.setOnClickListener(new View.OnClickListener() {

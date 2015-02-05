@@ -1,11 +1,13 @@
 package com.lqc.mylocalguide.fragments;
 
-import com.lqc.mylocalguide.MyRepository;
 import com.lqc.mylocalguide.R;
+import com.lqc.mylocalguide.login.PasswordHandler;
 import com.lqc.mylocalguide.scaling.ScalingHandler;
+import com.lqc.mylocalguide.storage.ConfigurationStorage;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +19,12 @@ import android.widget.ZoomControls;
 
 public class AdministrationFragment extends Fragment {
 
-	private EditText urlEditTxt, newAdminPassword, confirmNewAdminPassword,
-			newUserPassword, confirmNewUserPassword;
+	SharedPreferences settings;
+	private EditText zoomPercentageEditTxt, urlEditTxt, newAdminPasswordTxt,
+			confirmNewAdminPasswordTxt, newUserPasswordTxt, confirmNewUserPasswordTxt;
 	private Button save, cancel, exitApp;
 	private OnActionSelected mCallback;
 	private TextView zoomPercentage;
-	private ZoomControls zoomControls;
 	int currentScale;
 	private final static String ADMINISTRATION_FRAGMENT_FLAG = "AdministrationFragmentFLAG";
 
@@ -38,7 +40,6 @@ public class AdministrationFragment extends Fragment {
 	public interface OnActionSelected {
 
 		public void OnSave();
-
 		public void OnCancel();
 	}
 
@@ -58,45 +59,77 @@ public class AdministrationFragment extends Fragment {
 		View rootView = inflater.inflate(R.layout.manager_fragment_layout,
 				container, false);
 
-		currentScale = MyRepository.get().getScale();
+		settings = getActivity().getSharedPreferences(ConfigurationStorage.getInstance().STORAGE, 0);
 
 		urlEditTxt = (EditText) rootView.findViewById(R.id.urlEditText);
-		urlEditTxt.setText(MyRepository.get().getUrl());
+		urlEditTxt.setText(settings.getString(ConfigurationStorage.URL, ""));
 
 		zoomPercentage = (TextView) rootView.findViewById(R.id.zoomPercentage);
-		zoomPercentage.setText("" + MyRepository.get().getScale());
+		zoomPercentage.setText("" + settings.getInt(ConfigurationStorage.ZOOM, 0));
+		zoomPercentageEditTxt = (EditText)rootView.findViewById(R.id.zoomPercentageEditTxt);
 
-		zoomControls = (ZoomControls) rootView.findViewById(R.id.zoomControls);
-		zoomControls.setOnZoomInClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				zoomIn();
-			}
-
-		});
-		zoomControls.setOnZoomOutClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				zoomOut();
-			}
-		});
 		
-		newAdminPassword = (EditText)rootView.findViewById(R.id.newAdminPassTxtEdit);
-		confirmNewAdminPassword = (EditText)rootView.findViewById(R.id.confirmNewAdminPassTxtEdit);
-		newUserPassword = (EditText)rootView.findViewById(R.id.newUserPassTxtEdit);
-		confirmNewUserPassword = (EditText)rootView.findViewById(R.id.confirmNewUserPassTxtEdit);
+		newAdminPasswordTxt = (EditText)rootView.findViewById(R.id.newAdminPassTxtEdit);
+		confirmNewAdminPasswordTxt = (EditText)rootView.findViewById(R.id.confirmNewAdminPassTxtEdit);
+		newUserPasswordTxt = (EditText)rootView.findViewById(R.id.newUserPassTxtEdit);
+		confirmNewUserPasswordTxt = (EditText)rootView.findViewById(R.id.confirmNewUserPassTxtEdit);
 		
 		save = (Button) rootView.findViewById(R.id.saveChangesBtn);
 		save.setOnClickListener(new View.OnClickListener() {
 
 			@Override
 			public void onClick(View v) {
-				savePassword();
+				
+				//get all variables
+				String url = urlEditTxt.getText().toString();
+				String zoom = zoomPercentageEditTxt.getText().toString();
+				String newAdminPassword = newAdminPasswordTxt.getText().toString();
+				String confirmNewAdminPassword = confirmNewAdminPasswordTxt.getText().toString();
+				String newUserPassword = newUserPasswordTxt.getText().toString();
+				String confirmNewUserPassword = newUserPasswordTxt.getText().toString();
+				int parsedZoom = 0;
+				if(!zoom.equals("")) 
+					parsedZoom = Integer.parseInt(zoom);
+				
+				//update url
+				if(!(isEmptyString(url)) && !(url.equals(settings.getString(ConfigurationStorage.URL, "")))) {
+					updateUrl(url);
+				}
+				
+				//update zoom	
+				if(!(isEmptyString(zoom)) && parsedZoom  != settings.getInt(ConfigurationStorage.ZOOM, 0)) {
+					updateZoom(parsedZoom);
+				}
+				
+				//update admin password
+				if(!(isEmptyString(newAdminPassword) && isEmptyString(confirmNewAdminPassword))) {
+					updateAdminPassword(newAdminPassword, confirmNewAdminPassword);
+				}
+					
+				//update user password
+				if(!(isEmptyString(newUserPassword) && isEmptyString(confirmNewUserPassword))) {
+					updateUserPassword(newUserPassword, confirmNewUserPassword);
+				}
+				
 				if (mCallback != null) {
 					mCallback.OnSave();
 				}
+			}
+
+			private void updateAdminPassword(String password, String confirmPassword) {
+				PasswordHandler.getInstance().changeAdminPassword(getActivity(), password, confirmPassword);
+			}
+			
+			private void updateUserPassword(String password, String confirmPassword) {
+				PasswordHandler.getInstance().changeUserPassword(getActivity(), password, confirmPassword);
+			}
+
+			private void updateZoom(int zoom) {
+				ScalingHandler.getInstance().updateScale(getActivity(), zoom);
+			}
+
+			private void updateUrl(String url) {
+				ConfigurationStorage.getInstance().updateUrl(getActivity(), url);
 			}
 		});
 
@@ -121,40 +154,18 @@ public class AdministrationFragment extends Fragment {
 		return rootView;
 	}
 
-	private void savePassword() {
-		String url = "";
-		if ((url = urlEditTxt.getText().toString()) != null
-				&& !(url.equals(MyRepository.get().getUrl()))) {
-			MyRepository.get().setUrl(url);
-		}
-	}
-
-	private void zoomIn() {
-
-		int maxScaling = ScalingHandler.getInstance().getMaxScaling();
-		if (maxScaling - currentScale >= 10) {
-			int newScale = currentScale
-					+ ScalingHandler.getInstance().getScaleDifference();
-			MyRepository.get().setScale(newScale);
-			zoomPercentage.setText("" + newScale);
-		}
-	}
-
-	private void zoomOut() {
-
-		if (currentScale >= 10) {
-			int newScale = currentScale
-					- ScalingHandler.getInstance().getScaleDifference();
-			MyRepository.get().setScale(newScale);
-			zoomPercentage.setText("" + newScale);
-		}
-	}
-
 	private void showConfirmExitDialog() {
 		ConfirmApplicationExitFragment confirmExitDialog = ConfirmApplicationExitFragment
 				.get();
 		confirmExitDialog.show(getFragmentManager(),
 				ConfirmApplicationExitFragment.getTAG());
-
+	}
+	
+	private boolean isEmptyString(String stringToEvaluate) {
+		
+		if(stringToEvaluate.equals(""))
+				return true;
+		
+		return false;	
 	}
 }

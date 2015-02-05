@@ -1,5 +1,9 @@
 package com.lqc.mylocalguide.scaling;
 
+import android.content.Context;
+
+import com.lqc.mylocalguide.storage.ConfigurationStorage;
+
 public class ScalingHandler {
 	
 	private static ScalingHandler instance;
@@ -37,5 +41,9 @@ public class ScalingHandler {
 		if(instance == null) 
 			instance = new ScalingHandler();
 		return instance;
+	}
+	
+	public void updateScale(Context context, int scale) {
+		ConfigurationStorage.getInstance().updateZoom(context, scale);
 	}
 }

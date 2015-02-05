@@ -11,12 +11,16 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 public class CheckPasswordDialog extends DialogFragment {
 
+	public View rootView;
 	public static final String TAG = "CheckPasswordDialog";
 	public static final String CHECKPASSWORD_DIALOG_FRAGMENT_FLAG = "CheckPasswordDialogFragmentFLAG";
 	private String mode_FLAG;
@@ -45,6 +49,17 @@ public class CheckPasswordDialog extends DialogFragment {
 		checkPasswordDialog.setArguments(vBundle);
 		return checkPasswordDialog;
 	}
+	
+	public void shake() {
+		LinearLayout checkPasswordFragmentLayout = (LinearLayout)rootView.findViewById(R.id.checkPasswordLayout);
+		Animation shake = AnimationUtils.loadAnimation(getActivity(), R.anim.shake);
+		checkPasswordFragmentLayout.startAnimation(shake);
+	}
+	
+	public void clearPasswordEditText() {
+		EditText passwordEditExt = (EditText)rootView.findViewById(R.id.insertPasswordEditTxt);
+		passwordEditExt.setText("");
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -57,12 +72,12 @@ public class CheckPasswordDialog extends DialogFragment {
 			Toast.makeText(getActivity(), mode_FLAG, Toast.LENGTH_LONG).show();
 		}
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
-		View v = inflater.inflate(R.layout.check_password_dialog_layout,
+		rootView = inflater.inflate(R.layout.check_password_dialog_layout,
 				container, false);
 		
-		View passwordEditText = v.findViewById(R.id.insertPasswordEditTxt);
-		View loginBtn = v.findViewById(R.id.loginBtn);
-		View cancelBtn = v.findViewById(R.id.cancelBtn);
+		View passwordEditText = rootView.findViewById(R.id.insertPasswordEditTxt);
+		View loginBtn = rootView.findViewById(R.id.loginBtn);
+		View cancelBtn = rootView.findViewById(R.id.cancelBtn);
 		
 		final EditText passwordEditTextCst = ((EditText) passwordEditText);
 		final Button cancelBtnCst = ((Button) cancelBtn);
@@ -84,6 +99,6 @@ public class CheckPasswordDialog extends DialogFragment {
 			}
 		});
 
-		return v;
+		return rootView;
 	}
 }
