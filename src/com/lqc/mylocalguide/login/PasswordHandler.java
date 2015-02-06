@@ -1,7 +1,9 @@
 package com.lqc.mylocalguide.login;
 
+import android.app.Fragment;
 import android.content.Context;
 
+import com.lqc.mylocalguide.feedbacks.ErrorHandlerNoIUFragment;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
 
 public class PasswordHandler {
@@ -18,16 +20,36 @@ public class PasswordHandler {
 		return instance;
 	}
 
-	public void changeAdminPassword(Context context, String password,
-			String confirmPassword) {
-		if (arePasswordEquals(password, confirmPassword))
-			ConfigurationStorage.getInstance().updateAdminPassword(context, password);
+	public boolean changeAdminPassword(Fragment fragment, Context context,
+			String password, String confirmPassword) {
+		if (arePasswordEquals(password, confirmPassword)) {
+			ConfigurationStorage.getInstance().updateAdminPassword(context,
+					password);
+			return true;
+		} else {
+			triggerPasswordNotMatchError(0, fragment);
+			return false;
+		}
 	}
 
-	public void changeUserPassword(Context context, String password,
-			String confirmPassword) {
-		if (arePasswordEquals(password, confirmPassword))
-			ConfigurationStorage.getInstance().updateUserPassword(context, password);
+	public boolean changeUserPassword(Fragment fragment, Context context,
+			String password, String confirmPassword) {
+		if (arePasswordEquals(password, confirmPassword)) {
+			ConfigurationStorage.getInstance().updateUserPassword(context,
+					password);
+			return true;
+		} else {
+			triggerPasswordNotMatchError(1, fragment);
+			return false;
+		}
+	}
+
+	// 0 is admin, 1 is user
+	private void triggerPasswordNotMatchError(int who, Fragment fragment) {
+		ErrorHandlerNoIUFragment errorFragment = ErrorHandlerNoIUFragment
+				.getInstance(who);
+		fragment.getFragmentManager().beginTransaction()
+				.add(errorFragment, ErrorHandlerNoIUFragment.TAG).commit();
 	}
 
 	private boolean arePasswordEquals(String password, String conformPassword) {

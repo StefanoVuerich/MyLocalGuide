@@ -1,13 +1,15 @@
 package com.lqc.mylocalguide.fragments;
 
-import com.lqc.mylocalguide.fragments.CheckPasswordDialog.ICheckPassword;
-
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.Window;
+import android.widget.Button;
+
+import com.lqc.mylocalguide.R;
 
 public class ConfirmApplicationExitFragment extends DialogFragment {
 
@@ -22,7 +24,6 @@ public class ConfirmApplicationExitFragment extends DialogFragment {
 	public interface IExitApplicationConfirm {
 
 		public void onExitApplication();
-
 		public void onCancelExit();
 	}
 
@@ -40,43 +41,36 @@ public class ConfirmApplicationExitFragment extends DialogFragment {
 		return exitApplicationDialog;
 	}
 
-	
 	@Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
 
-        setStyle(DialogFragment.STYLE_NO_TITLE, android.R.style.Theme_Holo);
-    }
-	
-	@Override
-	public Dialog onCreateDialog(Bundle savedInstanceState) {
+		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
+		View rootView = inflater.inflate(R.layout.confirm_exit_dialog,
+				container, false);
 
-		AlertDialog.Builder vBuilder = new AlertDialog.Builder(getActivity());
-		
-		vBuilder.setTitle("Confirm Application Exit");
+		View exitAppBtn = rootView.findViewById(R.id.exitAppBtn);
+		View cancelExitAppBtn = rootView.findViewById(R.id.cancelExitAppBtn);
 
-		vBuilder.setMessage("Do you really want to qui the application ?");
+		final Button exitAppBtnCst = ((Button) exitAppBtn);
+		final Button cancelExitAppBtnCst = ((Button) cancelExitAppBtn);
 
-		vBuilder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+		exitAppBtnCst.setOnClickListener(new View.OnClickListener() {
 
 			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				if (mCallback != null)
-					mCallback.onExitApplication();
+			public void onClick(View v) {
+				mCallback.onExitApplication();
 			}
 		});
 
-		vBuilder.setNegativeButton("CANCEL",
-				new DialogInterface.OnClickListener() {
+		cancelExitAppBtnCst.setOnClickListener(new View.OnClickListener() {
 
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						if (mCallback != null)
-							mCallback.onCancelExit();
-					}
-				});
+			@Override
+			public void onClick(View v) {
+				mCallback.onCancelExit();
+			}
+		});
 
-		Dialog vDialog = vBuilder.create();
-		return vDialog;
+		return rootView;
 	}
 }

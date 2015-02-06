@@ -10,6 +10,7 @@ public class ConfigurationStorage {
 	public static final String USER_PASSWORD = "User_Password";
 	public static final String URL = "Url";
 	public static final String ZOOM = "Zoom";
+	public static final String STORAGE_FILE_NAME = "my_local_guide_storage.xml";
 	private static ConfigurationStorage instance;
 
 	private ConfigurationStorage() {

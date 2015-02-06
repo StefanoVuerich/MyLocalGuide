@@ -1,19 +1,18 @@
 package com.lqc.mylocalguide.fragments;
 
-import com.lqc.mylocalguide.R;
-import com.lqc.mylocalguide.storage.ConfigurationStorage;
-
 import android.annotation.SuppressLint;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Button;
+
+import com.lqc.mylocalguide.R;
+import com.lqc.mylocalguide.storage.ConfigurationStorage;
 
 public class WebViewFragment extends Fragment {
 

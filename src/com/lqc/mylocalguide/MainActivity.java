@@ -2,36 +2,42 @@ package com.lqc.mylocalguide;
 
 import java.io.File;
 
-import com.lqc.mylocalguide.fragments.AdministrationFragment;
-import com.lqc.mylocalguide.fragments.AdministrationFragment.OnActionSelected;
-import com.lqc.mylocalguide.fragments.CheckPasswordDialog;
-import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment.IExitApplicationConfirm;
-import com.lqc.mylocalguide.fragments.WebViewFragment;
-import com.lqc.mylocalguide.fragments.CheckPasswordDialog.ICheckPassword;
-import com.lqc.mylocalguide.login.LoginHandler;
-import com.lqc.mylocalguide.login.LoginModes;
-import com.lqc.mylocalguide.storage.ConfigurationStorage;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Environment;
+import android.widget.TextView;
+
+import com.lqc.mylocalguide.feedbacks.ErrorHandlerNoIUFragment.IErrorHandler;
+import com.lqc.mylocalguide.fragments.AdministrationFragment;
+import com.lqc.mylocalguide.fragments.AdministrationFragment.OnActionSelected;
+import com.lqc.mylocalguide.fragments.CheckPasswordDialog;
+import com.lqc.mylocalguide.fragments.CheckPasswordDialog.ICheckPassword;
+import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment;
+import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment.IExitApplicationConfirm;
+import com.lqc.mylocalguide.fragments.WebViewFragment;
+import com.lqc.mylocalguide.login.LoginHandler;
+import com.lqc.mylocalguide.storage.ConfigurationStorage;
 
 public class MainActivity extends Activity implements ICheckPassword,
-		OnActionSelected, IExitApplicationConfirm {
+		OnActionSelected, IExitApplicationConfirm, IErrorHandler {
 
 	public static final String WEB_VIEW_FRAGMENT = "WEB_VIEW_FRAGMENT";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		File f = new File(
-				"/data/data/com.lqc.mylocalguide/shared_prefs/my_local_guide_storage.xml");
+
+		String filename = ConfigurationStorage.STORAGE_FILE_NAME;
+		String filePath = Environment.getDataDirectory().getAbsolutePath()
+				+ "/data/" + getPackageName() + "/shared_prefs/" + filename;
+		File f = new File(filePath);
+
 		if (!f.exists()) {
 			ConfigurationStorage.getInstance().init(this);
-		}		
+		}
 
 		setContentView(R.layout.activity_main);
 
@@ -49,7 +55,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 			if (isLoginCorrect) {
 
 				closeCheckPasswordDialog();
-				onExitApplication();
+				showConfirmExitDialog();
 			} else {
 				wrongPassword();
 			}
@@ -68,6 +74,13 @@ public class MainActivity extends Activity implements ICheckPassword,
 				wrongPassword();
 			}
 		}
+	}
+
+	private void showConfirmExitDialog() {
+		ConfirmApplicationExitFragment confirmExitDialog = ConfirmApplicationExitFragment
+				.get();
+		confirmExitDialog.show(getFragmentManager(),
+				ConfirmApplicationExitFragment.getTAG());
 	}
 
 	private void wrongPassword() {
@@ -90,12 +103,12 @@ public class MainActivity extends Activity implements ICheckPassword,
 	}
 
 	@Override
-	public void OnSave() {
+	public void onSave() {
 		showWebViewFragment();
 	}
 
 	@Override
-	public void OnCancel() {
+	public void onCancelSave() {
 		showWebViewFragment();
 	}
 
@@ -114,6 +127,29 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 	@Override
 	public void onCancelExit() {
-		// Do nothing
+		closeConfirmExitApplicationFragment();
+	}
+
+	private void closeConfirmExitApplicationFragment() {
+		ConfirmApplicationExitFragment confirmApplicationExitFragment = (ConfirmApplicationExitFragment) getFragmentManager()
+				.findFragmentByTag(ConfirmApplicationExitFragment.getTAG());
+		confirmApplicationExitFragment.dismiss();
+	}
+
+	@Override
+	public void onPasswordDoesNotMatchError(int who) {
+		int textViewReference = 0;
+		switch (who) {
+		case 0:
+			textViewReference = R.id.newAdminPasswordFeedback;
+			break;
+		case 1:
+			textViewReference = R.id.newUserPasswordFeedback;
+			break;
+		}
+
+		TextView feedbackTxt = (TextView) findViewById(textViewReference);
+		feedbackTxt.setText("");
+		feedbackTxt.setText("Password and confirm password must be the same");
 	}
 }
