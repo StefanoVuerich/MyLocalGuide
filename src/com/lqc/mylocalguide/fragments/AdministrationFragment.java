@@ -57,8 +57,8 @@ public class AdministrationFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		View rootView = inflater.inflate(R.layout.manager_fragment_layout,
-				container, false);
+		final View rootView = inflater.inflate(
+				R.layout.manager_fragment_layout, container, false);
 
 		settings = getActivity().getSharedPreferences(
 				ConfigurationStorage.getInstance().STORAGE, 0);
@@ -121,21 +121,38 @@ public class AdministrationFragment extends Fragment {
 				if (!(isEmptyString(newAdminPassword) && isEmptyString(confirmNewAdminPassword))) {
 					adminPasswordSaved = updateAdminPassword(newAdminPassword,
 							confirmNewAdminPassword);
-				} else
+				} else {
+					resetFeedback(0);
 					adminPasswordSaved = true;
+				}
 
 				boolean userPasswordSaved = false;
 				// update user password
 				if (!(isEmptyString(newUserPassword) && isEmptyString(confirmNewUserPassword))) {
 					userPasswordSaved = updateUserPassword(newUserPassword,
 							confirmNewUserPassword);
-				} else
+				} else {
+					resetFeedback(1);
 					userPasswordSaved = true;
+				}
 
 				if (mCallback != null) {
 					if (adminPasswordSaved && userPasswordSaved)
 						mCallback.onSave();
 				}
+			}
+
+			// 0 is admin, 1 is user
+			private void resetFeedback(int which) {
+				int feedbackToReset = 0;
+				if (which == 0) {
+					feedbackToReset = R.id.newAdminPasswordFeedback;
+				} else {
+					feedbackToReset = R.id.newUserPasswordFeedback;
+				}
+				TextView feedback = (TextView) rootView
+						.findViewById(feedbackToReset);
+				feedback.setText("");
 			}
 
 			private boolean updateAdminPassword(String password,

@@ -1,6 +1,7 @@
 package com.lqc.mylocalguide.login;
 
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.content.Context;
 
 import com.lqc.mylocalguide.feedbacks.ErrorHandlerNoIUFragment;
@@ -50,6 +51,7 @@ public class PasswordHandler {
 				.getInstance(who);
 		fragment.getFragmentManager().beginTransaction()
 				.add(errorFragment, ErrorHandlerNoIUFragment.TAG).commit();
+		Fragment fr = fragment.getFragmentManager().findFragmentByTag(ErrorHandlerNoIUFragment.TAG);
 	}
 
 	private boolean arePasswordEquals(String password, String conformPassword) {
