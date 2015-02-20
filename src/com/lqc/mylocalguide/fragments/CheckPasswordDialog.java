@@ -67,8 +67,6 @@ public class CheckPasswordDialog extends DialogFragment {
 		Bundle vBundle = getArguments();
 		if (vBundle != null) {
 			mode_FLAG = vBundle.getString(CHECKPASSWORD_DIALOG_FRAGMENT_FLAG);
-
-			Toast.makeText(getActivity(), mode_FLAG, Toast.LENGTH_LONG).show();
 		}
 		getDialog().getWindow().requestFeature(Window.FEATURE_NO_TITLE);
 		rootView = inflater.inflate(R.layout.check_password_dialog_layout,

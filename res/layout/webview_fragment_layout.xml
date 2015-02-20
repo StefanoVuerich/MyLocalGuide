@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?><RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/webViewFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -11,23 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" 
-        android:background="#0000FF"/>
+        android:layout_alignParentTop="true"
+        android:background="#0000FF" />
 
-    <Button
-        android:id="@+id/exitBtn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentRight="true"
-        android:text="Exit" />
-
-    <Button
+    <ImageView
         android:id="@+id/adminBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_toLeftOf="@+id/exitBtn"
-        android:text="Admin" />
+        android:layout_alignParentRight="true"
+        android:src="@drawable/button_100px" />
 
 </RelativeLayout>

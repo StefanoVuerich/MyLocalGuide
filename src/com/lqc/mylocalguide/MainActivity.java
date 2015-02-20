@@ -4,13 +4,9 @@ import java.io.File;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.os.Environment;
-import android.widget.TextView;
 
-import com.lqc.mylocalguide.feedbacks.ErrorHandlerNoIUFragment.IErrorHandler;
 import com.lqc.mylocalguide.fragments.AdministrationFragment;
 import com.lqc.mylocalguide.fragments.AdministrationFragment.OnActionSelected;
 import com.lqc.mylocalguide.fragments.CheckPasswordDialog;
@@ -20,11 +16,14 @@ import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment.IExitApplic
 import com.lqc.mylocalguide.fragments.WebViewFragment;
 import com.lqc.mylocalguide.login.LoginHandler;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
+import com.lqc.mylocalguide.utilities.FragmentsFlags;
 
 public class MainActivity extends Activity implements ICheckPassword,
-		OnActionSelected, IExitApplicationConfirm, IErrorHandler {
+		OnActionSelected, IExitApplicationConfirm {
 
-	public static final String WEB_VIEW_FRAGMENT = "WEB_VIEW_FRAGMENT";
+	private static final String CURRENT_ACTIVE_FRAGMENT_TAG = "CURRENT_ACTIVE_FRAGMENT_TAG";
+	private FragmentsFlags activeFragment = null;
+	private static final boolean EXIST = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +40,22 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 		setContentView(R.layout.activity_main);
 
-		showWebViewFragment();
+		if (savedInstanceState != null) {
+			int activeFragment = savedInstanceState
+					.getInt(CURRENT_ACTIVE_FRAGMENT_TAG);
+			if (activeFragment == FragmentsFlags.WEBVIEWFRAGMENT.getPosition())
+				showWebViewFragment(EXIST);
+			else if (activeFragment == FragmentsFlags.ADMINISTRATIONFRAGMENT
+					.getPosition())
+				showAdministrationFragment(EXIST);
+		} else {
+			if (activeFragment == null
+					|| activeFragment == FragmentsFlags.WEBVIEWFRAGMENT)
+				showWebViewFragment(!EXIST);
+			else if (activeFragment != null
+					&& activeFragment == FragmentsFlags.ADMINISTRATIONFRAGMENT)
+				showAdministrationFragment(!EXIST);
+		}
 	}
 
 	@Override
@@ -65,11 +79,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 			if (isLoginCorrect) {
 
 				closeCheckPasswordDialog();
-				Fragment fr = new AdministrationFragment();
-				FragmentManager fm = getFragmentManager();
-				FragmentTransaction ft = fm.beginTransaction();
-				ft.replace(R.id.fragmentsContainer, fr);
-				ft.commit();
+				showAdministrationFragment(!EXIST);
 			} else {
 				wrongPassword();
 			}
@@ -103,21 +113,57 @@ public class MainActivity extends Activity implements ICheckPassword,
 	}
 
 	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		// fragmentFlag
+
+		Bundle vBundle = new Bundle();
+		vBundle.putInt(CURRENT_ACTIVE_FRAGMENT_TAG,
+				activeFragment.getPosition());
+		outState.putAll(vBundle);
+	}
+
+	@Override
 	public void onSave() {
-		showWebViewFragment();
+		showWebViewFragment(!EXIST);
 	}
 
 	@Override
 	public void onCancelSave() {
-		showWebViewFragment();
+		showWebViewFragment(!EXIST);
 	}
 
-	public void showWebViewFragment() {
-		Fragment fragment = WebViewFragment.get();
+	private void showWebViewFragment(boolean exist) {
+		Fragment fragment;
+		if (exist) {
+			fragment = getFragmentManager().findFragmentByTag(
+					WebViewFragment._TAG);
+		} else
+			fragment = WebViewFragment.get();
 
-		getFragmentManager().beginTransaction()
-				.add(R.id.fragmentsContainer, fragment, WEB_VIEW_FRAGMENT)
+		getFragmentManager()
+				.beginTransaction()
+				.replace(R.id.fragmentsContainer, fragment,
+						WebViewFragment._TAG).commit();
+
+		activeFragment = FragmentsFlags.WEBVIEWFRAGMENT;
+	}
+
+	private void showAdministrationFragment(boolean exist) {
+		Fragment fragment;
+		if (exist) {
+			fragment = getFragmentManager().findFragmentByTag(
+					AdministrationFragment.ADMINISTRATION_FRAGMENT_FLAG);
+		} else
+			fragment = AdministrationFragment.getInstance();
+
+		getFragmentManager()
+				.beginTransaction()
+				.replace(R.id.fragmentsContainer, fragment,
+						AdministrationFragment.ADMINISTRATION_FRAGMENT_FLAG)
 				.commit();
+
+		activeFragment = FragmentsFlags.ADMINISTRATIONFRAGMENT;
 	}
 
 	@Override
@@ -134,22 +180,5 @@ public class MainActivity extends Activity implements ICheckPassword,
 		ConfirmApplicationExitFragment confirmApplicationExitFragment = (ConfirmApplicationExitFragment) getFragmentManager()
 				.findFragmentByTag(ConfirmApplicationExitFragment.getTAG());
 		confirmApplicationExitFragment.dismiss();
-	}
-
-	@Override
-	public void onPasswordDoesNotMatchError(int who) {
-		int textViewReference = 0;
-		switch (who) {
-		case 0:
-			textViewReference = R.id.newAdminPasswordFeedback;
-			break;
-		case 1:
-			textViewReference = R.id.newUserPasswordFeedback;
-			break;
-		}
-
-		TextView feedbackTxt = (TextView) findViewById(textViewReference);
-		feedbackTxt.setText("");
-		feedbackTxt.setText("Password and confirm password must be the same");
 	}
 }

@@ -1,5 +1,6 @@
 package com.lqc.mylocalguide.fragments;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
@@ -18,17 +19,32 @@ import com.lqc.mylocalguide.storage.ConfigurationStorage;
 
 public class AdministrationFragment extends Fragment {
 
+	private static final String USER_FEEDBACK = "UserFeedback";
+	private static final String ADMIN_FEEDBACK = "AdminFeedback";
+	private static final String CONFIRM_NEW_USER_PASSWORD_TAG = "CONFIRM_NEW_USER_PASSWORD_TAG";
+	private static final String NEW_USER_PASSWORD_TAG = "NEW_USER_PASSWORD_TAG";
+	private static final String CONFIRM_NEW_ADMIN_PASSWORD_TAG = "CONFIRM_NEW_ADMIN_PASSWORD_TAG";
+	private static final String NEW_ADMIN_PASSWORD_TAG = "NEW_ADMIN_PASSWORD_TAG";
+	private static final String ZOOM_TAG = "ZOOM_TAG";
+	private static final String APPLICATION_URL_TAG = "APPLICATION_URL_TAG";
 	SharedPreferences settings;
 	private EditText zoomPercentageEditTxt, urlEditTxt, newAdminPasswordTxt,
 			confirmNewAdminPasswordTxt, newUserPasswordTxt,
 			confirmNewUserPasswordTxt;
 	private Button save, cancel, exitApp;
 	private OnActionSelected mCallback;
-	private TextView zoomPercentage;
+	private TextView zoomPercentage, adminFeedback, userFeedback;
+	private View rootView;
 	int currentScale;
-	private final static String ADMINISTRATION_FRAGMENT_FLAG = "AdministrationFragmentFLAG";
+	public final static String ADMINISTRATION_FRAGMENT_FLAG = "AdministrationFragmentFLAG";
 
-	public AdministrationFragment getInstance(String flag) {
+	public static AdministrationFragment getInstance() {
+
+		AdministrationFragment administrationFragment = new AdministrationFragment();
+		return administrationFragment;
+	}
+
+	public static AdministrationFragment getInstance(String flag) {
 
 		AdministrationFragment administrationFragment = new AdministrationFragment();
 		Bundle vBundle = new Bundle();
@@ -40,13 +56,15 @@ public class AdministrationFragment extends Fragment {
 	public interface OnActionSelected {
 
 		public void onSave();
-
 		public void onCancelSave();
 	}
 
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
+
+		ActionBar actionBar = activity.getActionBar();
+		actionBar.show();
 
 		if (activity instanceof OnActionSelected) {
 			mCallback = (OnActionSelected) activity;
@@ -57,21 +75,17 @@ public class AdministrationFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		final View rootView = inflater.inflate(
-				R.layout.manager_fragment_layout, container, false);
-
+		// initialize views
+		rootView = inflater.inflate(R.layout.manager_fragment_layout,
+				container, false);
+		urlEditTxt = (EditText) rootView.findViewById(R.id.urlEditText);
+		zoomPercentage = (TextView) rootView.findViewById(R.id.zoomPercentage);
 		settings = getActivity().getSharedPreferences(
 				ConfigurationStorage.getInstance().STORAGE, 0);
-
-		urlEditTxt = (EditText) rootView.findViewById(R.id.urlEditText);
-		urlEditTxt.setText(settings.getString(ConfigurationStorage.URL, ""));
-
-		zoomPercentage = (TextView) rootView.findViewById(R.id.zoomPercentage);
 		zoomPercentage.setText(""
 				+ settings.getInt(ConfigurationStorage.ZOOM, 0));
 		zoomPercentageEditTxt = (EditText) rootView
 				.findViewById(R.id.zoomPercentageEditTxt);
-
 		newAdminPasswordTxt = (EditText) rootView
 				.findViewById(R.id.newAdminPassTxtEdit);
 		confirmNewAdminPasswordTxt = (EditText) rootView
@@ -80,108 +94,40 @@ public class AdministrationFragment extends Fragment {
 				.findViewById(R.id.newUserPassTxtEdit);
 		confirmNewUserPasswordTxt = (EditText) rootView
 				.findViewById(R.id.confirmNewUserPassTxtEdit);
+		adminFeedback = (TextView) rootView
+				.findViewById(R.id.newAdminPasswordFeedback);
+		userFeedback = (TextView) rootView
+				.findViewById(R.id.newUserPasswordFeedback);
+
+		if (savedInstanceState != null) {
+			urlEditTxt.setText(savedInstanceState
+					.getString(APPLICATION_URL_TAG));
+			zoomPercentageEditTxt.setText(savedInstanceState
+					.getString(ZOOM_TAG));
+			newAdminPasswordTxt.setText(savedInstanceState
+					.getString(NEW_ADMIN_PASSWORD_TAG));
+			confirmNewAdminPasswordTxt.setText(savedInstanceState
+					.getString(CONFIRM_NEW_ADMIN_PASSWORD_TAG));
+			newUserPasswordTxt.setText(savedInstanceState
+					.getString(NEW_USER_PASSWORD_TAG));
+			confirmNewUserPasswordTxt.setText(savedInstanceState
+					.getString(CONFIRM_NEW_USER_PASSWORD_TAG));
+			adminFeedback.setText(savedInstanceState.getString(ADMIN_FEEDBACK));
+			userFeedback.setText(savedInstanceState.getString(USER_FEEDBACK));
+
+		} else
+			urlEditTxt.setText(settings.getString(ConfigurationStorage.URL, ""));
 
 		save = (Button) rootView.findViewById(R.id.saveChangesBtn);
 		save.setOnClickListener(new View.OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
-
-				// get all variables
-				String url = urlEditTxt.getText().toString();
-				String zoom = zoomPercentageEditTxt.getText().toString();
-				String newAdminPassword = newAdminPasswordTxt.getText()
-						.toString();
-				String confirmNewAdminPassword = confirmNewAdminPasswordTxt
-						.getText().toString();
-				String newUserPassword = newUserPasswordTxt.getText()
-						.toString();
-				String confirmNewUserPassword = confirmNewUserPasswordTxt
-						.getText().toString();
-				int parsedZoom = 0;
-				if (!zoom.equals(""))
-					parsedZoom = Integer.parseInt(zoom);
-
-				// update url
-				if (!(isEmptyString(url))
-						&& !(url.equals(settings.getString(
-								ConfigurationStorage.URL, "")))) {
-					updateUrl(url);
-				}
-
-				// update zoom
-				if (!(isEmptyString(zoom))
-						&& parsedZoom != settings.getInt(
-								ConfigurationStorage.ZOOM, 0)) {
-					updateZoom(parsedZoom);
-				}
-
-				boolean adminPasswordSaved = false;
-				// update admin password
-				if (!(isEmptyString(newAdminPassword) && isEmptyString(confirmNewAdminPassword))) {
-					adminPasswordSaved = updateAdminPassword(newAdminPassword,
-							confirmNewAdminPassword);
-				} else {
-					resetFeedback(0);
-					adminPasswordSaved = true;
-				}
-
-				boolean userPasswordSaved = false;
-				// update user password
-				if (!(isEmptyString(newUserPassword) && isEmptyString(confirmNewUserPassword))) {
-					userPasswordSaved = updateUserPassword(newUserPassword,
-							confirmNewUserPassword);
-				} else {
-					resetFeedback(1);
-					userPasswordSaved = true;
-				}
-
-				if (mCallback != null) {
-					if (adminPasswordSaved && userPasswordSaved)
-						mCallback.onSave();
-				}
-			}
-
-			// 0 is admin, 1 is user
-			private void resetFeedback(int which) {
-				int feedbackToReset = 0;
-				if (which == 0) {
-					feedbackToReset = R.id.newAdminPasswordFeedback;
-				} else {
-					feedbackToReset = R.id.newUserPasswordFeedback;
-				}
-				TextView feedback = (TextView) rootView
-						.findViewById(feedbackToReset);
-				feedback.setText("");
-			}
-
-			private boolean updateAdminPassword(String password,
-					String confirmPassword) {
-				return PasswordHandler.getInstance().changeAdminPassword(
-						AdministrationFragment.this, getActivity(), password,
-						confirmPassword);
-			}
-
-			private boolean updateUserPassword(String password,
-					String confirmPassword) {
-				return PasswordHandler.getInstance().changeUserPassword(
-						AdministrationFragment.this, getActivity(), password,
-						confirmPassword);
-			}
-
-			private void updateZoom(int zoom) {
-				ScalingHandler.getInstance().updateScale(getActivity(), zoom);
-			}
-
-			private void updateUrl(String url) {
-				ConfigurationStorage.getInstance()
-						.updateUrl(getActivity(), url);
+				save();
 			}
 		});
 
 		cancel = (Button) rootView.findViewById(R.id.cancelChangesBtn);
 		cancel.setOnClickListener(new View.OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				mCallback.onCancelSave();
@@ -190,7 +136,6 @@ public class AdministrationFragment extends Fragment {
 
 		exitApp = (Button) rootView.findViewById(R.id.exitAppButton);
 		exitApp.setOnClickListener(new View.OnClickListener() {
-
 			@Override
 			public void onClick(View v) {
 				showConfirmExitDialog();
@@ -198,6 +143,61 @@ public class AdministrationFragment extends Fragment {
 		});
 
 		return rootView;
+	}
+
+	private void save() {
+
+		// get all variables
+		String url = urlEditTxt.getText().toString();
+		String zoom = zoomPercentageEditTxt.getText().toString();
+		String newAdminPassword = newAdminPasswordTxt.getText().toString();
+		String confirmNewAdminPassword = confirmNewAdminPasswordTxt.getText()
+				.toString();
+		String newUserPassword = newUserPasswordTxt.getText().toString();
+		String confirmNewUserPassword = confirmNewUserPasswordTxt.getText()
+				.toString();
+		int parsedZoom = 0;
+		if (!zoom.equals(""))
+			parsedZoom = Integer.parseInt(zoom);
+
+		// update url
+		if (!(isEmptyString(url))
+				&& !(url.equals(settings
+						.getString(ConfigurationStorage.URL, "")))) {
+			updateUrl(url);
+		}
+
+		// update zoom
+		if (!(isEmptyString(zoom))
+				&& parsedZoom != settings.getInt(ConfigurationStorage.ZOOM, 0)) {
+			updateZoom(parsedZoom);
+		}
+
+		boolean adminPasswordSaved = false;
+		// update admin password
+		if (!(isEmptyString(newAdminPassword) && isEmptyString(confirmNewAdminPassword))) {
+			adminPasswordSaved = updateAdminPassword(newAdminPassword,
+					confirmNewAdminPassword);
+		} else {
+			resetFeedback(0);
+			adminPasswordSaved = true;
+		}
+
+		boolean userPasswordSaved = false;
+		// update user password
+		if (!(isEmptyString(newUserPassword) && isEmptyString(confirmNewUserPassword))) {
+			userPasswordSaved = updateUserPassword(newUserPassword,
+					confirmNewUserPassword);
+		} else {
+			resetFeedback(1);
+			userPasswordSaved = true;
+		}
+
+		if (mCallback != null) {
+			if (adminPasswordSaved && userPasswordSaved)
+				mCallback.onSave();
+		}
+
 	}
 
 	private void showConfirmExitDialog() {
@@ -214,4 +214,57 @@ public class AdministrationFragment extends Fragment {
 
 		return false;
 	}
+
+	// 0 is admin, 1 is user
+	private void resetFeedback(int which) {
+		int feedbackToReset = 0;
+		if (which == 0) {
+			feedbackToReset = R.id.newAdminPasswordFeedback;
+		} else {
+			feedbackToReset = R.id.newUserPasswordFeedback;
+		}
+		TextView feedback = (TextView) rootView.findViewById(feedbackToReset);
+		feedback.setText("");
+	}
+
+	private boolean updateAdminPassword(String password, String confirmPassword) {
+
+		return PasswordHandler.getInstance().changeAdminPassword(getActivity(),
+				password, confirmPassword);
+	}
+
+	private boolean updateUserPassword(String password, String confirmPassword) {
+		return PasswordHandler.getInstance().changeUserPassword(getActivity(),
+				password, confirmPassword);
+	}
+
+	private void updateZoom(int zoom) {
+		ScalingHandler.getInstance().updateScale(getActivity(), zoom);
+	}
+
+	private void updateUrl(String url) {
+		ConfigurationStorage.getInstance().updateUrl(getActivity(), url);
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		Bundle vBundle = new Bundle();
+		vBundle.putString(APPLICATION_URL_TAG, urlEditTxt.getText().toString());
+		vBundle.putString(ZOOM_TAG, zoomPercentageEditTxt.getText().toString());
+		vBundle.putString(NEW_ADMIN_PASSWORD_TAG, newAdminPasswordTxt.getText()
+				.toString());
+		vBundle.putString(CONFIRM_NEW_ADMIN_PASSWORD_TAG,
+				confirmNewAdminPasswordTxt.getText().toString());
+		vBundle.putString(NEW_USER_PASSWORD_TAG, newUserPasswordTxt.getText()
+				.toString());
+		vBundle.putString(CONFIRM_NEW_USER_PASSWORD_TAG,
+				confirmNewUserPasswordTxt.getText().toString());
+		// saving feedbacks
+		vBundle.putString(ADMIN_FEEDBACK, adminFeedback.getText().toString());
+		vBundle.putString(USER_FEEDBACK, userFeedback.getText().toString());
+		outState.putAll(vBundle);
+	}
+
 }

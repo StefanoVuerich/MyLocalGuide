@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item android:drawable="@drawable/button_100px">
+        <rotate
+            android:fromDegrees="45"
+            android:pivotX="-40%"
+            android:pivotY="87%"
+            android:toDegrees="45" >
+            <shape android:shape="rectangle" />
+        </rotate>
+    </item>
+
+</layer-list>

@@ -1,292 +1,281 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/scrollView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" 
-        android:scrollbars="none">
-
-<LinearLayout 
+    android:id="@+id/scrollView1"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF"
-    android:orientation="vertical"
-    android:padding="8dp" >
-
-    <TextView
-        android:id="@+id/textView1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:gravity="center"
-        android:text="Welcome Admin"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000" />
+    android:scrollbars="none" >
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/layout_rounded_corners" >
+        android:background="#FFFFFF"
+        android:orientation="vertical"
+        android:padding="8dp" >
 
         <TextView
-            android:id="@+id/urlEditLabel"
-            android:layout_width="0dp"
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:text="Application URL"
+            android:text="Welcome Admin"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textColor="#000000" />
 
-        <EditText
-            android:id="@+id/urlEditText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:ems="10" />
-        
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/layout_rounded_corners" >
-
         <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" >
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/layout_rounded_corners" >
 
             <TextView
-                android:id="@+id/zoomLabel"
+                android:id="@+id/urlEditLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="Zoom"
+                android:text="Application URL"
                 android:textAppearance="?android:attr/textAppearanceLarge"
                 android:textColor="#000000" />
 
-            <TextView
-                android:id="@+id/zoomPercentage"
+            <EditText
+                android:id="@+id/urlEditText"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
                 android:layout_weight="1"
+                android:ems="10" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/layout_rounded_corners" >
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <TextView
+                    android:id="@+id/zoomLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Zoom"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#000000" />
+
+                <TextView
+                    android:id="@+id/zoomPercentage"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:layout_weight="1"
+                    android:text=""
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#F76A05"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1" >
+
+                <EditText
+                    android:id="@+id/zoomPercentageEditTxt"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="number" />
+
+                <TextView
+                    android:id="@+id/percentageLabel"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_weight="1"
+                    android:gravity="left"
+                    android:text="%"
+                    android:textAppearance="?android:attr/textAppearanceLarge"
+                    android:textColor="#000000" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/changeAdminPasswordLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:text="Change Admin Password"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#000000" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/layout_rounded_corners"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" >
+
+                <TextView
+                    android:id="@+id/newAdminPassLbl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="New Admin Password"
+                    android:theme="@style/administrationFragmentTextView" />
+
+                <EditText
+                    android:id="@+id/newAdminPassTxtEdit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" >
+
+                <TextView
+                    android:id="@+id/confirmNewAdminPassLbl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Confirm new Admin Password"
+                    android:theme="@style/administrationFragmentTextView" />
+
+                <EditText
+                    android:id="@+id/confirmNewAdminPassTxtEdit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/newAdminPasswordFeedback"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text=""
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#F76A05"
-                android:textStyle="bold" />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1" >
-
-            <EditText
-                android:id="@+id/zoomPercentageEditTxt"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="number" />
-
-            <TextView
-                android:id="@+id/percentageLabel"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="8dp"
-                android:layout_weight="1"
-                android:gravity="left"
-                android:text="%"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#000000" />
-
-        </LinearLayout>
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/changeAdminPasswordLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingBottom="10dp"
-        android:text="Change Admin Password"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/layout_rounded_corners"
-        android:orientation="vertical" >
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp" >
-
-            <TextView
-                android:id="@+id/newAdminPassLbl"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="New Admin Password"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#000000" />
-
-            <EditText
-                android:id="@+id/newAdminPassTxtEdit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="textPassword" 
-                android:layout_marginTop="6dp" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp" >
-
-            <TextView
-                android:id="@+id/confirmNewAdminPassLbl"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Confirm new Admin Password"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#000000" />
-
-            <EditText
-                android:id="@+id/confirmNewAdminPassTxtEdit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:inputType="textPassword" 
-                android:layout_marginTop="6dp" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="#FF0000" />
         </LinearLayout>
 
         <TextView
-            android:id="@+id/newAdminPasswordFeedback"
-            android:layout_width="wrap_content"
+            android:id="@+id/changeUserPasswordLabel"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="#FF0000"
-            android:textAppearance="?android:attr/textAppearanceSmall" />
-
-    </LinearLayout>
-
-    <TextView
-        android:id="@+id/changeUserPasswordLabel"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:paddingBottom="10dp"
-        android:text="Change User Password"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textColor="#000000" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:background="@drawable/layout_rounded_corners"
-        android:orientation="vertical" >
+            android:gravity="center"
+            android:paddingBottom="10dp"
+            android:text="Change User Password"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:textColor="#000000" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp" >
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/layout_rounded_corners"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" >
+
+                <TextView
+                    android:id="@+id/newUserPassLbl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="New User Password"
+                    android:theme="@style/administrationFragmentTextView"/>
+
+                <EditText
+                    android:id="@+id/newUserPassTxtEdit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp" >
+
+                <TextView
+                    android:id="@+id/confirmNewUserPassLbl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Confirm new User Password"
+                    android:theme="@style/administrationFragmentTextView"/>
+
+                <EditText
+                    android:id="@+id/confirmNewUserPassTxtEdit"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    android:layout_weight="1"
+                    android:ems="10"
+                    android:inputType="textPassword" />
+            </LinearLayout>
 
             <TextView
-                android:id="@+id/newUserPassLbl"
-                android:layout_width="0dp"
+                android:id="@+id/newUserPasswordFeedback"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="New User Password"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#000000" />
-
-            <EditText
-                android:id="@+id/newUserPassTxtEdit"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ems="10"
-                android:layout_marginTop="6dp" 
-                android:inputType="textPassword" />
+                android:text=""
+                android:textColor="#FF0000" />
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp" >
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="10dp" >
 
-            <TextView
-                android:id="@+id/confirmNewUserPassLbl"
+            <Button
+                android:id="@+id/saveChangesBtn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Confirm new User Password"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#000000" />
+                android:text="Save" />
 
-            <EditText
-                android:id="@+id/confirmNewUserPassTxtEdit"
+            <Button
+                android:id="@+id/cancelChangesBtn"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:ems="10"
-                android:inputType="textPassword"
-                android:layout_marginTop="6dp" />
+                android:text="Cancel" />
+
+            <Button
+                android:id="@+id/exitAppButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Exit App" />
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/newUserPasswordFeedback"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text=""
-            android:textColor="#FF0000" />
-
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:layout_marginBottom="10dp" >
-
-        <Button
-            android:id="@+id/saveChangesBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Save" />
-
-        <Button
-            android:id="@+id/cancelChangesBtn"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Cancel" />
-
-        <Button
-            android:id="@+id/exitAppButton"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Exit Application" />
-    </LinearLayout>
-
-</LinearLayout>
 
 </ScrollView>

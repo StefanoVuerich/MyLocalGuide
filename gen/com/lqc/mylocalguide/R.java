@@ -26,12 +26,15 @@ public final class R {
         public static final int activity_vertical_margin=0x7f060001;
     }
     public static final class drawable {
-        public static final int ic_launcher=0x7f020000;
-        public static final int layout_rounded_corners=0x7f020001;
+        public static final int button_100px=0x7f020000;
+        public static final int ic_launcher=0x7f020001;
+        public static final int layout_rounded_corners=0x7f020002;
+        public static final int lqc_logo_lo=0x7f020003;
+        public static final int triangle_shape=0x7f020004;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0023;
-        public static final int adminBtn=0x7f0a0022;
+        public static final int action_settings=0x7f0a0022;
+        public static final int adminBtn=0x7f0a0021;
         public static final int cancelBtn=0x7f0a0005;
         public static final int cancelChangesBtn=0x7f0a001d;
         public static final int cancelExitAppBtn=0x7f0a0007;
@@ -44,7 +47,6 @@ public final class R {
         public static final int confirmNewUserPassTxtEdit=0x7f0a001a;
         public static final int exitAppBtn=0x7f0a0006;
         public static final int exitAppButton=0x7f0a001e;
-        public static final int exitBtn=0x7f0a0021;
         public static final int fragmentsContainer=0x7f0a0000;
         public static final int insertPasswordEditTxt=0x7f0a0003;
         public static final int insertPasswordLabel=0x7f0a0002;
@@ -69,13 +71,15 @@ public final class R {
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
-        public static final int check_password_dialog_layout=0x7f030001;
-        public static final int confirm_exit_dialog=0x7f030002;
-        public static final int manager_fragment_layout=0x7f030003;
-        public static final int webview_fragment_layout=0x7f030004;
+        public static final int activity_web_intent_layout=0x7f030001;
+        public static final int check_password_dialog_layout=0x7f030002;
+        public static final int confirm_exit_dialog=0x7f030003;
+        public static final int manager_fragment_layout=0x7f030004;
+        public static final int webview_fragment_layout=0x7f030005;
     }
     public static final class menu {
         public static final int main=0x7f090000;
+        public static final int web_intent=0x7f090001;
     }
     public static final class raw {
         public static final int first=0x7f050000;
@@ -85,6 +89,7 @@ public final class R {
         public static final int action_settings=0x7f070002;
         public static final int app_name=0x7f070000;
         public static final int hello_world=0x7f070001;
+        public static final int title_activity_web_intent=0x7f070003;
     }
     public static final class style {
         /** 
@@ -110,8 +115,10 @@ public final class R {
          */
         public static final int AppBaseTheme=0x7f080000;
         /**  Application theme. 
- All customizations that are NOT specific to a particular API-level can go here. 
          */
         public static final int AppTheme=0x7f080001;
+        /**  TextView administration fragment theme 
+         */
+        public static final int administrationFragmentTextView=0x7f080002;
     }
 }
