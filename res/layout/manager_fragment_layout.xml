@@ -13,14 +13,12 @@
         android:padding="8dp" >
 
         <TextView
+            android:theme="@style/administrationFragmentTitleTextView"
             android:id="@+id/textView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
             android:gravity="center"
-            android:text="Welcome Admin"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
+            android:text="Welcome Admin"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -29,14 +27,12 @@
             android:background="@drawable/layout_rounded_corners" >
 
             <TextView
+                android:theme="@style/administrationFragmentTextView"
                 android:id="@+id/urlEditLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="Application URL"
-                android:textAppearance="?android:attr/textAppearanceLarge"
-                android:textColor="#000000" />
+                android:text="Application URL"/>
 
             <EditText
                 android:id="@+id/urlEditText"
@@ -58,22 +54,20 @@
                 android:layout_weight="1" >
 
                 <TextView
+                    android:theme="@style/administrationFragmentTextView"
                     android:id="@+id/zoomLabel"
+                    android:layout_marginTop="4dp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
                     android:layout_weight="1"
-                    android:gravity="center"
-                    android:text="Zoom"
-                    android:textAppearance="?android:attr/textAppearanceLarge"
-                    android:textColor="#000000" />
+                    android:text="Zoom"/>
 
                 <TextView
                     android:id="@+id/zoomPercentage"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="4dp"
                     android:layout_weight="1"
+                    android:layout_marginTop="4dp"
                     android:text=""
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:textColor="#F76A05"
@@ -107,14 +101,12 @@
         </LinearLayout>
 
         <TextView
+            android:theme="@style/administrationFragmentTitleTextView"
             android:id="@+id/changeAdminPasswordLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="10dp"
-            android:text="Change Admin Password"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
+            android:text="Change Admin Password"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -179,14 +171,12 @@
         </LinearLayout>
 
         <TextView
+            android:theme="@style/administrationFragmentTitleTextView"
             android:id="@+id/changeUserPasswordLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingBottom="10dp"
-            android:text="Change User Password"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textColor="#000000" />
+            android:text="Change User Password"/>
 
         <LinearLayout
             android:layout_width="match_parent"

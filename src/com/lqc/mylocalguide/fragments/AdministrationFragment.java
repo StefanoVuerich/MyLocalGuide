@@ -19,6 +19,7 @@ import com.lqc.mylocalguide.storage.ConfigurationStorage;
 
 public class AdministrationFragment extends Fragment {
 
+	private static final String URL_SHEME = "http://";
 	private static final String USER_FEEDBACK = "UserFeedback";
 	private static final String ADMIN_FEEDBACK = "AdminFeedback";
 	private static final String CONFIRM_NEW_USER_PASSWORD_TAG = "CONFIRM_NEW_USER_PASSWORD_TAG";
@@ -243,6 +244,11 @@ public class AdministrationFragment extends Fragment {
 	}
 
 	private void updateUrl(String url) {
+		
+		// check is URL starts with http://
+		if(!url.startsWith(URL_SHEME)) {
+			url = URL_SHEME + url;
+		}
 		ConfigurationStorage.getInstance().updateUrl(getActivity(), url);
 	}
 

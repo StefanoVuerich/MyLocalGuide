@@ -117,8 +117,11 @@ public final class R {
         /**  Application theme. 
          */
         public static final int AppTheme=0x7f080001;
-        /**  TextView administration fragment theme 
+        /**  TextView form administration fragment theme 
          */
         public static final int administrationFragmentTextView=0x7f080002;
+        /**  TextView title administration fragment theme 
+         */
+        public static final int administrationFragmentTitleTextView=0x7f080003;
     }
 }
