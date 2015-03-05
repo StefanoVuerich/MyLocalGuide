@@ -1,10 +1,10 @@
 package com.lqc.mylocalguide.fragments;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +19,9 @@ import com.lqc.mylocalguide.storage.ConfigurationStorage;
 
 public class AdministrationFragment extends Fragment {
 
-	private static final String URL_SHEME = "http://";
+	public final static String _TAG = "AdministrationFragment";
+	
+	private static final String URL_SCHEME = "http://";
 	private static final String USER_FEEDBACK = "UserFeedback";
 	private static final String ADMIN_FEEDBACK = "AdminFeedback";
 	private static final String CONFIRM_NEW_USER_PASSWORD_TAG = "CONFIRM_NEW_USER_PASSWORD_TAG";
@@ -40,22 +42,19 @@ public class AdministrationFragment extends Fragment {
 	public final static String ADMINISTRATION_FRAGMENT_FLAG = "AdministrationFragmentFLAG";
 
 	public static AdministrationFragment getInstance() {
-
 		AdministrationFragment administrationFragment = new AdministrationFragment();
 		return administrationFragment;
 	}
 
-	public static AdministrationFragment getInstance(String flag) {
-
+	/*public static AdministrationFragment getInstance(String flag) {
 		AdministrationFragment administrationFragment = new AdministrationFragment();
 		Bundle vBundle = new Bundle();
 		vBundle.putString(ADMINISTRATION_FRAGMENT_FLAG, flag);
 		administrationFragment.setArguments(vBundle);
 		return administrationFragment;
-	}
+	}*/
 
 	public interface OnActionSelected {
-
 		public void onSave();
 		public void onCancelSave();
 	}
@@ -63,10 +62,6 @@ public class AdministrationFragment extends Fragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-
-		ActionBar actionBar = activity.getActionBar();
-		actionBar.show();
-
 		if (activity instanceof OnActionSelected) {
 			mCallback = (OnActionSelected) activity;
 		}
@@ -76,9 +71,37 @@ public class AdministrationFragment extends Fragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		// initialize views
 		rootView = inflater.inflate(R.layout.manager_fragment_layout,
 				container, false);
+		
+		initView();
+
+		if (savedInstanceState != null)
+			restoreState(savedInstanceState);
+		else
+			urlEditTxt.setText(settings.getString(ConfigurationStorage.URL, ""));
+
+		return rootView;
+	}
+
+	private void restoreState(Bundle savedInstanceState) {
+		urlEditTxt.setText(savedInstanceState
+				.getString(APPLICATION_URL_TAG));
+		zoomPercentageEditTxt.setText(savedInstanceState
+				.getString(ZOOM_TAG));
+		newAdminPasswordTxt.setText(savedInstanceState
+				.getString(NEW_ADMIN_PASSWORD_TAG));
+		confirmNewAdminPasswordTxt.setText(savedInstanceState
+				.getString(CONFIRM_NEW_ADMIN_PASSWORD_TAG));
+		newUserPasswordTxt.setText(savedInstanceState
+				.getString(NEW_USER_PASSWORD_TAG));
+		confirmNewUserPasswordTxt.setText(savedInstanceState
+				.getString(CONFIRM_NEW_USER_PASSWORD_TAG));
+		adminFeedback.setText(savedInstanceState.getString(ADMIN_FEEDBACK));
+		userFeedback.setText(savedInstanceState.getString(USER_FEEDBACK));
+	}
+
+	private void initView() {
 		urlEditTxt = (EditText) rootView.findViewById(R.id.urlEditText);
 		zoomPercentage = (TextView) rootView.findViewById(R.id.zoomPercentage);
 		settings = getActivity().getSharedPreferences(
@@ -99,26 +122,6 @@ public class AdministrationFragment extends Fragment {
 				.findViewById(R.id.newAdminPasswordFeedback);
 		userFeedback = (TextView) rootView
 				.findViewById(R.id.newUserPasswordFeedback);
-
-		if (savedInstanceState != null) {
-			urlEditTxt.setText(savedInstanceState
-					.getString(APPLICATION_URL_TAG));
-			zoomPercentageEditTxt.setText(savedInstanceState
-					.getString(ZOOM_TAG));
-			newAdminPasswordTxt.setText(savedInstanceState
-					.getString(NEW_ADMIN_PASSWORD_TAG));
-			confirmNewAdminPasswordTxt.setText(savedInstanceState
-					.getString(CONFIRM_NEW_ADMIN_PASSWORD_TAG));
-			newUserPasswordTxt.setText(savedInstanceState
-					.getString(NEW_USER_PASSWORD_TAG));
-			confirmNewUserPasswordTxt.setText(savedInstanceState
-					.getString(CONFIRM_NEW_USER_PASSWORD_TAG));
-			adminFeedback.setText(savedInstanceState.getString(ADMIN_FEEDBACK));
-			userFeedback.setText(savedInstanceState.getString(USER_FEEDBACK));
-
-		} else
-			urlEditTxt.setText(settings.getString(ConfigurationStorage.URL, ""));
-
 		save = (Button) rootView.findViewById(R.id.saveChangesBtn);
 		save.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -142,8 +145,6 @@ public class AdministrationFragment extends Fragment {
 				showConfirmExitDialog();
 			}
 		});
-
-		return rootView;
 	}
 
 	private void save() {
@@ -246,8 +247,8 @@ public class AdministrationFragment extends Fragment {
 	private void updateUrl(String url) {
 		
 		// check is URL starts with http://
-		if(!url.startsWith(URL_SHEME)) {
-			url = URL_SHEME + url;
+		if(!url.startsWith(URL_SCHEME)) {
+			url = URL_SCHEME + url;
 		}
 		ConfigurationStorage.getInstance().updateUrl(getActivity(), url);
 	}
@@ -271,6 +272,8 @@ public class AdministrationFragment extends Fragment {
 		vBundle.putString(ADMIN_FEEDBACK, adminFeedback.getText().toString());
 		vBundle.putString(USER_FEEDBACK, userFeedback.getText().toString());
 		outState.putAll(vBundle);
+		
+		outState.putString(_TAG , "Restore");
+		Log.v("jajaja", "on saved instance state");
 	}
-
 }

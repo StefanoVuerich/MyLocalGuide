@@ -13,7 +13,6 @@
         android:padding="8dp" >
 
         <TextView
-            android:theme="@style/administrationFragmentTitleTextView"
             android:id="@+id/textView1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -27,7 +26,6 @@
             android:background="@drawable/layout_rounded_corners" >
 
             <TextView
-                android:theme="@style/administrationFragmentTextView"
                 android:id="@+id/urlEditLabel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -54,7 +52,6 @@
                 android:layout_weight="1" >
 
                 <TextView
-                    android:theme="@style/administrationFragmentTextView"
                     android:id="@+id/zoomLabel"
                     android:layout_marginTop="4dp"
                     android:layout_width="0dp"
@@ -101,7 +98,6 @@
         </LinearLayout>
 
         <TextView
-            android:theme="@style/administrationFragmentTitleTextView"
             android:id="@+id/changeAdminPasswordLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -125,8 +121,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="New Admin Password"
-                    android:theme="@style/administrationFragmentTextView" />
+                    android:text="New Admin Password"/>
 
                 <EditText
                     android:id="@+id/newAdminPassTxtEdit"
@@ -148,8 +143,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Confirm new Admin Password"
-                    android:theme="@style/administrationFragmentTextView" />
+                    android:text="Confirm new Admin Password"/>
 
                 <EditText
                     android:id="@+id/confirmNewAdminPassTxtEdit"
@@ -171,7 +165,6 @@
         </LinearLayout>
 
         <TextView
-            android:theme="@style/administrationFragmentTitleTextView"
             android:id="@+id/changeUserPasswordLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -195,8 +188,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="New User Password"
-                    android:theme="@style/administrationFragmentTextView"/>
+                    android:text="New User Password"/>
 
                 <EditText
                     android:id="@+id/newUserPassTxtEdit"
@@ -218,8 +210,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Confirm new User Password"
-                    android:theme="@style/administrationFragmentTextView"/>
+                    android:text="Confirm new User Password"/>
 
                 <EditText
                     android:id="@+id/confirmNewUserPassTxtEdit"

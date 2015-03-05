@@ -36,6 +36,7 @@ public class PasswordHandler {
 	public boolean changeAdminPassword(Activity activity,
 			String password, String confirmPassword) {
 		if (arePasswordEquals(password, confirmPassword)) {
+			((TextView) activity.findViewById(R.id.newAdminPasswordFeedback)).setText("");;
 			ConfigurationStorage.getInstance().updateAdminPassword(activity,
 					password);
 			return true;
@@ -48,6 +49,7 @@ public class PasswordHandler {
 	public boolean changeUserPassword(Activity activity,
 			String password, String confirmPassword) {
 		if (arePasswordEquals(password, confirmPassword)) {
+			((TextView) activity.findViewById(R.id.newUserPasswordFeedback)).setText("");;
 			ConfigurationStorage.getInstance().updateUserPassword(activity,
 					password);
 			return true;

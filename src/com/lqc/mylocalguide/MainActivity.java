@@ -3,9 +3,12 @@ package com.lqc.mylocalguide;
 import java.io.File;
 
 import android.app.Activity;
-import android.app.Fragment;
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Environment;
+import android.view.View;
 
 import com.lqc.mylocalguide.fragments.AdministrationFragment;
 import com.lqc.mylocalguide.fragments.AdministrationFragment.OnActionSelected;
@@ -13,22 +16,32 @@ import com.lqc.mylocalguide.fragments.CheckPasswordDialog;
 import com.lqc.mylocalguide.fragments.CheckPasswordDialog.ICheckPassword;
 import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment;
 import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment.IExitApplicationConfirm;
-import com.lqc.mylocalguide.fragments.WebViewFragment;
+import com.lqc.mylocalguide.fragments.MyWebViewFragment;
+import com.lqc.mylocalguide.fragments.NoConnectionFragment;
 import com.lqc.mylocalguide.login.LoginHandler;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
-import com.lqc.mylocalguide.utilities.FragmentsFlags;
 
 public class MainActivity extends Activity implements ICheckPassword,
 		OnActionSelected, IExitApplicationConfirm {
-
-	private static final String CURRENT_ACTIVE_FRAGMENT_TAG = "CURRENT_ACTIVE_FRAGMENT_TAG";
-	private FragmentsFlags activeFragment = null;
-	private static final boolean EXIST = true;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		getWindow().getDecorView().setSystemUiVisibility(
+				View.SYSTEM_UI_FLAG_LOW_PROFILE);
+
+		setContentView(R.layout.activity_main);
+		initConfigurationStorage();
+
+		checkForInternetConnection(MainActivity.this);	
+	}
+
+	private void showNoConnectionFragment() {
+		getFragmentManager().beginTransaction().add(R.id.fragmentsContainer, NoConnectionFragment.getInstance(), null).commit();
+	}
+
+	private void initConfigurationStorage() {
 		String filename = ConfigurationStorage.STORAGE_FILE_NAME;
 		String filePath = Environment.getDataDirectory().getAbsolutePath()
 				+ "/data/" + getPackageName() + "/shared_prefs/" + filename;
@@ -37,25 +50,22 @@ public class MainActivity extends Activity implements ICheckPassword,
 		if (!f.exists()) {
 			ConfigurationStorage.getInstance().init(this);
 		}
+	}
 
-		setContentView(R.layout.activity_main);
-
-		if (savedInstanceState != null) {
-			int activeFragment = savedInstanceState
-					.getInt(CURRENT_ACTIVE_FRAGMENT_TAG);
-			if (activeFragment == FragmentsFlags.WEBVIEWFRAGMENT.getPosition())
-				showWebViewFragment(EXIST);
-			else if (activeFragment == FragmentsFlags.ADMINISTRATIONFRAGMENT
-					.getPosition())
-				showAdministrationFragment(EXIST);
-		} else {
-			if (activeFragment == null
-					|| activeFragment == FragmentsFlags.WEBVIEWFRAGMENT)
-				showWebViewFragment(!EXIST);
-			else if (activeFragment != null
-					&& activeFragment == FragmentsFlags.ADMINISTRATIONFRAGMENT)
-				showAdministrationFragment(!EXIST);
-		}
+	private void checkForInternetConnection(Context context) {
+		ConnectivityManager cm = (ConnectivityManager) context
+				.getSystemService(MainActivity.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
+		boolean isConnected = activeNetwork != null
+				&& activeNetwork.isConnectedOrConnecting();
+		if(!isConnected)
+			showNoConnectionFragment();
+		else
+			showWebViewFragment();
+	}
+	
+	public void reCheckForConnection() {
+		checkForInternetConnection(MainActivity.this);
 	}
 
 	@Override
@@ -79,7 +89,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 			if (isLoginCorrect) {
 
 				closeCheckPasswordDialog();
-				showAdministrationFragment(!EXIST);
+				showAdministrationFragment();
 			} else {
 				wrongPassword();
 			}
@@ -113,57 +123,28 @@ public class MainActivity extends Activity implements ICheckPassword,
 	}
 
 	@Override
-	protected void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		// fragmentFlag
-
-		Bundle vBundle = new Bundle();
-		vBundle.putInt(CURRENT_ACTIVE_FRAGMENT_TAG,
-				activeFragment.getPosition());
-		outState.putAll(vBundle);
-	}
-
-	@Override
 	public void onSave() {
-		showWebViewFragment(!EXIST);
+		showWebViewFragment();
 	}
 
 	@Override
 	public void onCancelSave() {
-		showWebViewFragment(!EXIST);
+		showWebViewFragment();
 	}
 
-	private void showWebViewFragment(boolean exist) {
-		Fragment fragment;
-		if (exist) {
-			fragment = getFragmentManager().findFragmentByTag(
-					WebViewFragment._TAG);
-		} else
-			fragment = WebViewFragment.get();
-
+	private void showWebViewFragment() {
 		getFragmentManager()
 				.beginTransaction()
-				.replace(R.id.fragmentsContainer, fragment,
-						WebViewFragment._TAG).commit();
-
-		activeFragment = FragmentsFlags.WEBVIEWFRAGMENT;
+				.replace(R.id.fragmentsContainer, MyWebViewFragment.get(),
+						MyWebViewFragment._TAG).commit();
 	}
 
-	private void showAdministrationFragment(boolean exist) {
-		Fragment fragment;
-		if (exist) {
-			fragment = getFragmentManager().findFragmentByTag(
-					AdministrationFragment.ADMINISTRATION_FRAGMENT_FLAG);
-		} else
-			fragment = AdministrationFragment.getInstance();
-
+	private void showAdministrationFragment() {
 		getFragmentManager()
 				.beginTransaction()
-				.replace(R.id.fragmentsContainer, fragment,
-						AdministrationFragment.ADMINISTRATION_FRAGMENT_FLAG)
-				.commit();
-
-		activeFragment = FragmentsFlags.ADMINISTRATIONFRAGMENT;
+				.replace(R.id.fragmentsContainer, AdministrationFragment.getInstance(),
+						AdministrationFragment._TAG).addToBackStack(null)
+				.commit();	
 	}
 
 	@Override

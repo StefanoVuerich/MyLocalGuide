@@ -12,18 +12,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.lqc.mylocalguide.R;
 
 public class CheckPasswordDialog extends DialogFragment {
 
-	public View rootView;
+	private View rootView;
 	public static final String TAG = "CheckPasswordDialog";
-
-	public static final String CHECKPASSWORD_DIALOG_FRAGMENT_FLAG = "CheckPasswordDialogFragmentFLAG";
+	private static final String CHECKPASSWORD_DIALOG_FRAGMENT_FLAG = "CheckPasswordDialogFragmentFLAG";
 	private String mode_FLAG;
-
 	private ICheckPassword mCallback;
 
 	public interface ICheckPassword {
@@ -35,7 +32,6 @@ public class CheckPasswordDialog extends DialogFragment {
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
-
 		if (activity instanceof ICheckPassword) {
 			mCallback = (ICheckPassword) activity;
 		}

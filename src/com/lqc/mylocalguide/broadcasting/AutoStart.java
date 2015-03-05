@@ -1,14 +1,11 @@
 package com.lqc.mylocalguide.broadcasting;
 
-import com.lqc.mylocalguide.MainActivity;
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.os.PatternMatcher;
 import android.util.Log;
-import android.widget.Toast;
+
+import com.lqc.mylocalguide.MainActivity;
 
 public class AutoStart extends BroadcastReceiver {
 

@@ -14,16 +14,18 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
-        android:logo="@drawable/lqc_logo_lo"
         android:icon="@drawable/lqc_logo_lo"
-        android:label="@string/app_name" >
+        android:label="@string/app_name"
+        android:logo="@drawable/lqc_logo_lo"
+        android:theme="@style/AppTheme" >
         <activity
             android:name=".MainActivity"
-            android:label="@string/app_name"
-            android:theme="@style/AppTheme" >
+            android:label="@string/app_name" 
+            android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -43,7 +45,7 @@
                 <!--
         Accepts URIs that begin with "example://gizmos”
         <data android:scheme="example"
-              android:host="gizmos" />
+              android:host="gizmos" />
                 -->
             </intent-filter>
         </activity>
@@ -69,7 +71,7 @@
                 <!--
         Accepts URIs that begin with "example://gizmos”
         <data android:scheme="example"
-              android:host="gizmos" />
+              android:host="gizmos" />
                 -->
             </intent-filter>
         </receiver>

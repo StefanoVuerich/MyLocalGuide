@@ -30,11 +30,13 @@ public final class R {
         public static final int ic_launcher=0x7f020001;
         public static final int layout_rounded_corners=0x7f020002;
         public static final int lqc_logo_lo=0x7f020003;
-        public static final int triangle_shape=0x7f020004;
+        public static final int no_internet_connection=0x7f020004;
+        public static final int triangle_shape=0x7f020005;
     }
     public static final class id {
-        public static final int action_settings=0x7f0a0022;
-        public static final int adminBtn=0x7f0a0021;
+        public static final int RelativeLayout1=0x7f0a001f;
+        public static final int action_settings=0x7f0a0026;
+        public static final int adminBtn=0x7f0a0025;
         public static final int cancelBtn=0x7f0a0005;
         public static final int cancelChangesBtn=0x7f0a001d;
         public static final int cancelExitAppBtn=0x7f0a0007;
@@ -51,20 +53,23 @@ public final class R {
         public static final int insertPasswordEditTxt=0x7f0a0003;
         public static final int insertPasswordLabel=0x7f0a0002;
         public static final int loginBtn=0x7f0a0004;
-        public static final int mWebView=0x7f0a0020;
+        public static final int mWebView=0x7f0a0024;
         public static final int newAdminPassLbl=0x7f0a0011;
         public static final int newAdminPassTxtEdit=0x7f0a0012;
         public static final int newAdminPasswordFeedback=0x7f0a0015;
         public static final int newUserPassLbl=0x7f0a0017;
         public static final int newUserPassTxtEdit=0x7f0a0018;
         public static final int newUserPasswordFeedback=0x7f0a001b;
+        public static final int noInternetImageView=0x7f0a0020;
+        public static final int noInternetTextView=0x7f0a0021;
         public static final int percentageLabel=0x7f0a000f;
+        public static final int progressBar=0x7f0a0023;
         public static final int saveChangesBtn=0x7f0a001c;
         public static final int scrollView1=0x7f0a0008;
         public static final int textView1=0x7f0a0009;
         public static final int urlEditLabel=0x7f0a000a;
         public static final int urlEditText=0x7f0a000b;
-        public static final int webViewFragment=0x7f0a001f;
+        public static final int webViewFragment=0x7f0a0022;
         public static final int zoomLabel=0x7f0a000c;
         public static final int zoomPercentage=0x7f0a000d;
         public static final int zoomPercentageEditTxt=0x7f0a000e;
@@ -75,7 +80,8 @@ public final class R {
         public static final int check_password_dialog_layout=0x7f030002;
         public static final int confirm_exit_dialog=0x7f030003;
         public static final int manager_fragment_layout=0x7f030004;
-        public static final int webview_fragment_layout=0x7f030005;
+        public static final int no_internet_fregment_layout=0x7f030005;
+        public static final int webview_fragment_layout=0x7f030006;
     }
     public static final class menu {
         public static final int main=0x7f090000;
