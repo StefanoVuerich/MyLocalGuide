@@ -20,18 +20,6 @@ public class PasswordHandler {
 		}
 		return instance;
 	}
-
-	/*public boolean changeAdminPassword(Fragment fragment, Context context,
-			String password, String confirmPassword) {
-		if (arePasswordEquals(password, confirmPassword)) {
-			ConfigurationStorage.getInstance().updateAdminPassword(context,
-					password);
-			return true;
-		} else {
-			triggerPasswordNotMatchError(0, fragment);
-			return false;
-		}
-	}*/
 	
 	public boolean changeAdminPassword(Activity activity,
 			String password, String confirmPassword) {
