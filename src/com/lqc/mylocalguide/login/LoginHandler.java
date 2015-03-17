@@ -49,7 +49,6 @@ public class LoginHandler {
 				// wrong password to administrate
 				return false;
 			}
-
 		}
 		return false;
 	}

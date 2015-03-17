@@ -7,8 +7,8 @@ import com.lqc.mylocalguide.storage.ConfigurationStorage;
 public class ScalingHandler {
 	
 	private static ScalingHandler instance;
-	private int minScaling = 0;
-	private int maxScaling = 200;
+	private final static int MINSCALING = 0;
+	private final static int MAXSCALING = 200;
 	private int scaleDifference = 10;
 	
 	public int getScaleDifference() {
@@ -22,19 +22,11 @@ public class ScalingHandler {
 	private ScalingHandler() {}
 	
 	public int getMinScaling() {
-		return minScaling;
-	}
-
-	public void setMinScaling(int minScaling) {
-		this.minScaling = minScaling;
+		return MINSCALING;
 	}
 
 	public int getMaxScaling() {
-		return maxScaling;
-	}
-
-	public void setMaxScaling(int maxScaling) {
-		this.maxScaling = maxScaling;
+		return MAXSCALING;
 	}
 
 	public static ScalingHandler getInstance() {

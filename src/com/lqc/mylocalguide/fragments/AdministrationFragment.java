@@ -6,10 +6,15 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.lqc.mylocalguide.R;
@@ -17,10 +22,10 @@ import com.lqc.mylocalguide.login.PasswordHandler;
 import com.lqc.mylocalguide.scaling.ScalingHandler;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
 
-public class AdministrationFragment extends Fragment {
+public class AdministrationFragment extends Fragment implements OnTouchListener {
 
 	public final static String _TAG = "AdministrationFragment";
-	
+
 	private static final String URL_SCHEME = "http://";
 	private static final String USER_FEEDBACK = "UserFeedback";
 	private static final String ADMIN_FEEDBACK = "AdminFeedback";
@@ -40,22 +45,16 @@ public class AdministrationFragment extends Fragment {
 	private View rootView;
 	int currentScale;
 	public final static String ADMINISTRATION_FRAGMENT_FLAG = "AdministrationFragmentFLAG";
+	private LinearLayout administrationFragmentContainer;
 
 	public static AdministrationFragment getInstance() {
 		AdministrationFragment administrationFragment = new AdministrationFragment();
 		return administrationFragment;
 	}
 
-	/*public static AdministrationFragment getInstance(String flag) {
-		AdministrationFragment administrationFragment = new AdministrationFragment();
-		Bundle vBundle = new Bundle();
-		vBundle.putString(ADMINISTRATION_FRAGMENT_FLAG, flag);
-		administrationFragment.setArguments(vBundle);
-		return administrationFragment;
-	}*/
-
 	public interface OnActionSelected {
 		public void onSave();
+
 		public void onCancelSave();
 	}
 
@@ -73,22 +72,25 @@ public class AdministrationFragment extends Fragment {
 
 		rootView = inflater.inflate(R.layout.manager_fragment_layout,
 				container, false);
-		
+
+		administrationFragmentContainer = (LinearLayout) rootView
+				.findViewById(R.id.administrationFragmentContainerLayout);
+		administrationFragmentContainer.setOnTouchListener(this);
+
 		initView();
 
 		if (savedInstanceState != null)
 			restoreState(savedInstanceState);
 		else
-			urlEditTxt.setText(settings.getString(ConfigurationStorage.URL, ""));
+			urlEditTxt
+					.setText(settings.getString(ConfigurationStorage.URL, ""));
 
 		return rootView;
 	}
 
 	private void restoreState(Bundle savedInstanceState) {
-		urlEditTxt.setText(savedInstanceState
-				.getString(APPLICATION_URL_TAG));
-		zoomPercentageEditTxt.setText(savedInstanceState
-				.getString(ZOOM_TAG));
+		urlEditTxt.setText(savedInstanceState.getString(APPLICATION_URL_TAG));
+		zoomPercentageEditTxt.setText(savedInstanceState.getString(ZOOM_TAG));
 		newAdminPasswordTxt.setText(savedInstanceState
 				.getString(NEW_ADMIN_PASSWORD_TAG));
 		confirmNewAdminPasswordTxt.setText(savedInstanceState
@@ -245,9 +247,9 @@ public class AdministrationFragment extends Fragment {
 	}
 
 	private void updateUrl(String url) {
-		
+
 		// check is URL starts with http://
-		if(!url.startsWith(URL_SCHEME)) {
+		if (!url.startsWith(URL_SCHEME)) {
 			url = URL_SCHEME + url;
 		}
 		ConfigurationStorage.getInstance().updateUrl(getActivity(), url);
@@ -272,8 +274,15 @@ public class AdministrationFragment extends Fragment {
 		vBundle.putString(ADMIN_FEEDBACK, adminFeedback.getText().toString());
 		vBundle.putString(USER_FEEDBACK, userFeedback.getText().toString());
 		outState.putAll(vBundle);
-		
-		outState.putString(_TAG , "Restore");
-		Log.v("jajaja", "on saved instance state");
+
+		outState.putString(_TAG, "Restore");
+	}
+
+	// Hide virtual keyboard when touch container layout
+	@Override
+	public boolean onTouch(View v, MotionEvent event) {
+		InputMethodManager imm =(InputMethodManager)getActivity().getSystemService(getActivity().INPUT_METHOD_SERVICE);
+		  imm.hideSoftInputFromWindow(administrationFragmentContainer.getWindowToken(), 2);
+		return false;
 	}
 }

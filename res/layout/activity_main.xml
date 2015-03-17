@@ -3,5 +3,6 @@
     android:id="@+id/fragmentsContainer"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context="com.lqc.mylocalguide.MainActivity" >
+    tools:context="com.lqc.mylocalguide.MainActivity" 
+    android:background="#FFFFFF">
 </FrameLayout>
