@@ -3,6 +3,7 @@ package com.lqc.mylocalguide.broadcasting;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.util.Log;
 
 import com.lqc.mylocalguide.MainActivity;
 
@@ -15,5 +16,6 @@ public class AutoStart extends BroadcastReceiver {
 			i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			context.startActivity(i);
 		}
+		Log.v("jajaja", "receive by receiver");
 	}
 }

@@ -20,7 +20,6 @@ import com.lqc.mylocalguide.storage.ConfigurationStorage;
 public class MyWebViewFragment extends Fragment {
 
 	private WebView webView;
-	private ImageView adminBtn;
 	public final static String _TAG = "MyWebViewFragment";
 	private View rootView;
 	private SharedPreferences settings;
@@ -44,22 +43,6 @@ public class MyWebViewFragment extends Fragment {
 			webView.restoreState(savedInstanceState);
 		else 
 			webView.loadUrl(settings.getString(ConfigurationStorage.URL, ""));
-		
-		adminBtn = (ImageView) rootView.findViewById(R.id.adminBtn);
-		adminBtn.setOnClickListener(new View.OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				showCheckPasswordDialog("exit");
-			}
-		});
-		adminBtn.setOnLongClickListener(new View.OnLongClickListener() {
-
-			@Override
-			public boolean onLongClick(View v) {
-				showCheckPasswordDialog("admin");
-				return false;
-			}
-		});
 
 		return rootView;
 	}

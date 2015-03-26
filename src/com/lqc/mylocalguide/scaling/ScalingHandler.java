@@ -36,6 +36,12 @@ public class ScalingHandler {
 	}
 	
 	public void updateScale(Context context, int scale) {
+		if(scale < MINSCALING)
+			scale = MINSCALING;
+		
+		if(scale > MAXSCALING)
+			scale= MAXSCALING;
+		
 		ConfigurationStorage.getInstance().updateZoom(context, scale);
 	}
 }

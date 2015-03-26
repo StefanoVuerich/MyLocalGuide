@@ -1,25 +1,34 @@
 package com.lqc.mylocalguide;
 
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.IOException;
-import java.util.concurrent.TimeoutException;
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.app.Fragment;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.FrameLayout;
+import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.lqc.mylocalguide.broadcasting.AutoStart;
 import com.lqc.mylocalguide.fragments.AdministrationFragment;
 import com.lqc.mylocalguide.fragments.AdministrationFragment.OnActionSelected;
 import com.lqc.mylocalguide.fragments.CheckPasswordDialog;
@@ -30,9 +39,6 @@ import com.lqc.mylocalguide.fragments.MyWebViewFragment;
 import com.lqc.mylocalguide.fragments.NoConnectionFragment;
 import com.lqc.mylocalguide.login.LoginHandler;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
-import com.stericson.RootShell.RootShell;
-import com.stericson.RootShell.exceptions.RootDeniedException;
-import com.stericson.RootShell.execution.Shell;
 
 public class MainActivity extends Activity implements ICheckPassword,
 		OnActionSelected, IExitApplicationConfirm, OnTouchListener {
@@ -40,7 +46,35 @@ public class MainActivity extends Activity implements ICheckPassword,
 	@Override
 	protected void onResume() {
 		super.onResume();
+		Log.v("jajaja", "on resume");
+
+		// showNoConnectionFragment();
+
+		task = new MyTask();
+		task.execute();
+
+		firstLoop = true;
+		Log.v("jajaja",
+				"start task with boolean is cancelled = " + task.isCancelled()
+						+ task.getStatus().toString());
 		hideVirtualButtons();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		Log.v("jajaja", "on pause");
+
+		if (task != null) {
+			boolean stopped = task.cancel(false);
+			Log.v("jajaja", "stopping task");
+		}
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.v("jajaja", "on destroy");
 	}
 
 	@SuppressLint("InlinedApi")
@@ -54,53 +88,68 @@ public class MainActivity extends Activity implements ICheckPassword,
 						| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 	}
 
-	
-	
-	@Override
-	public boolean onTouchEvent(MotionEvent event) {
-		Log.v("jajaja","touch");
-		return super.onTouchEvent(event);
-	}
-
-	@Override
-	public boolean onTrackballEvent(MotionEvent event) {
-		Log.v("jajaja","track");
-		return super.onTrackballEvent(event);
-	}
-
-	@Override
-	public void takeKeyEvents(boolean get) {
-		Log.v("jajaja","take");
-		super.takeKeyEvents(get);
-	}
-
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-
-		int x = event.getAction();
-
-		Log.v("jajaja", "code " + x);
-
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			return false;
-		}
-		if (keyCode == KeyEvent.KEYCODE_HOME) {
-			Toast.makeText(MainActivity.this, "move home clicked",
-					Toast.LENGTH_LONG).show();
 			return false;
 		}
 		return false;
 	}
 
 	@Override
+	public void onWindowFocusChanged(boolean hasFocus) {
+		super.onWindowFocusChanged(hasFocus);
+
+		Log.v("jajaja", "Focus changed !");
+
+		if (!hasFocus) {
+			Log.v("jajaja", "Lost focus !");
+
+			windowCloseHandler.post(windowCloserRunnable);
+		}
+	}
+
+	private void toggleRecents() {
+		Intent closeRecents = new Intent(
+				"com.android.systemui.recent.action.TOGGLE_RECENTS");
+		closeRecents.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+				| Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+		ComponentName recents = new ComponentName("com.android.systemui",
+				"com.android.systemui.recent.RecentsActivity");
+		closeRecents.setComponent(recents);
+		this.startActivity(closeRecents);
+	}
+
+	private Handler windowCloseHandler = new Handler();
+	private Runnable windowCloserRunnable = new Runnable() {
+
+		@Override
+		public void run() {
+
+			ActivityManager am = (ActivityManager) getApplicationContext()
+					.getSystemService(Context.ACTIVITY_SERVICE);
+
+			ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
+
+			if (cn != null
+					&& cn.getClassName().equals(
+							"com.android.systemui.recent.RecentsActivity")) {
+				toggleRecents();
+			}
+		}
+	};
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		/*
-		 * this.requestWindowFeature(Window.FEATURE_NO_TITLE);
-		 * this.getWindow().setFlags(WindowManager.LayoutParams.,
-		 * WindowManager.LayoutParams.FLAG_FULLSCREEN);
-		 */
+		Log.v("jajaja", "on create");
+
+		final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
+		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+
+		initConfigurationStorage();
+
 		getWindow().getDecorView().setSystemUiVisibility(
 				View.SYSTEM_UI_FLAG_LAYOUT_STABLE
 						| View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
@@ -111,41 +160,98 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 		setContentView(R.layout.activity_main);
 
-		if (RootShell.isRootAvailable()) {
-			Log.v("jajaja", "root is avaiable");
+	}
 
-			if (RootShell.exists("build.prop")) {
-				Log.v("jajaja", "build.prop found");
+	TextView noConnectionFeedback;
+	static MyTask task;
+
+	boolean firstLoop;
+	boolean hasConnection;
+
+	public class MyTask extends AsyncTask<Void, Integer, Void> {
+
+		@Override
+		protected Void doInBackground(Void... params) {
+
+			hasConnection = checkForInternetConnection(MainActivity.this);
+
+			if (hasConnection)
+				showWebViewFragment();
+
+			else {
+
+				while (!isCancelled() && !hasConnection) {
+
+					Log.v("jajaja", "checking for connection");
+
+ 
+					hasConnection = checkForInternetConnection(MainActivity.this);
+					if (hasConnection) {
+						showWebViewFragment();
+						break;
+					} else {
+						// if (firstLoop) {
+						showNoConnectionFragment();
+						noConnectionFeedback = (TextView) findViewById(R.id.noInternetTextView);
+						Log.v("jajaja", "show no connection fragment");
+						// }
+						int seconds = 5;
+						while (seconds >= 0 && !isCancelled()) {
+							Log.v("jajaja", "seconds: " + seconds);
+							publishProgress(seconds);
+							try {
+								Thread.sleep(1000);
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+							--seconds;
+						}
+						firstLoop = false;
+					}
+
+				}
 			}
-			;
-		} else {
-			Log.v("jajaja", "root is not avaiable");
+
+			return null;
 		}
 
-		try {
-			Shell shell = RootShell.getShell(true, 1000,
-					Shell.ShellContext.SYSTEM_APP);
-			if (shell != null)
-				Log.v("jajaja", "we have root shell");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (TimeoutException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (RootDeniedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		@Override
+		protected void onProgressUpdate(Integer... values) {
+			super.onProgressUpdate(values);
+
+			noConnectionFeedback = (TextView) findViewById(R.id.noInternetTextView);
+
+			int count = values[0];
+
+			if (count == 0) {
+				noConnectionFeedback
+						.setText("Try to established internet connection");
+			} else {
+				noConnectionFeedback
+						.setText("No Internet Connection, retry in " + count);
+			}
 		}
 
-		checkForInternetConnection(MainActivity.this);
 	}
 
 	private void showNoConnectionFragment() {
+
+		/*
+		 * Fragment fragment = getFragmentManager().findFragmentByTag(
+		 * NoConnectionFragment.class.getSimpleName());
+		 * 
+		 * if (fragment != null) { getFragmentManager() .beginTransaction()
+		 * .replace(R.id.fragmentsContainer, NoConnectionFragment.getInstance(),
+		 * NoConnectionFragment.class.getSimpleName()) .commit(); } else {
+		 */
+
 		getFragmentManager()
 				.beginTransaction()
-				.add(R.id.fragmentsContainer,
-						NoConnectionFragment.getInstance(), null).commit();
+				.replace(R.id.fragmentsContainer,
+						NoConnectionFragment.getInstance(),
+						NoConnectionFragment.class.getSimpleName()).commit();
+		// }
 	}
 
 	private void initConfigurationStorage() {
@@ -159,16 +265,18 @@ public class MainActivity extends Activity implements ICheckPassword,
 		}
 	}
 
-	private void checkForInternetConnection(Context context) {
+	boolean first = true;
+
+	private boolean checkForInternetConnection(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context
 				.getSystemService(MainActivity.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
 		boolean isConnected = activeNetwork != null
 				&& activeNetwork.isConnectedOrConnecting();
 		if (!isConnected)
-			showNoConnectionFragment();
-		else
-			showWebViewFragment();
+			return false;
+
+		return true;
 	}
 
 	public void reCheckForConnection() {
@@ -257,7 +365,12 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 	@Override
 	public void onExitApplication() {
-		System.exit(0);
+		Intent intent = new Intent();
+		intent.setAction("android.intent.action.MAIN");
+		intent.addCategory("android.intent.category.MONKEY");
+		startActivity(intent);
+		closeConfirmExitApplicationFragment();
+		showWebViewFragment();
 	}
 
 	@Override
@@ -271,22 +384,28 @@ public class MainActivity extends Activity implements ICheckPassword,
 		confirmApplicationExitFragment.dismiss();
 	}
 
-	private void setSystemUIEnabled(boolean enabled) {
-		try {
-			Process p = Runtime.getRuntime().exec("su");
-			DataOutputStream os = new DataOutputStream(p.getOutputStream());
-			os.writeBytes("pm " + (enabled ? "enable" : "disable")
-					+ " com.android.systemui\n");
-			os.writeBytes("exit\n");
-			os.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public boolean onTouch(View v, MotionEvent event) {
 		Toast.makeText(MainActivity.this, "touch", Toast.LENGTH_LONG).show();
 		return false;
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Log.v("jajaja", "on stop receiver unregistered");
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Log.v("jajaja", "on start");
+
+	}
+
+	@Override
+	protected void onRestart() {
+		super.onRestart();
+		Log.v("jajaja", "on restart");
 	}
 }
