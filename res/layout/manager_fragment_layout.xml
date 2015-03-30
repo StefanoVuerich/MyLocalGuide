@@ -14,7 +14,7 @@
         android:padding="8dp" >
 
         <TextView
-            android:id="@+id/textView1"
+            android:id="@+id/TextView01"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -39,11 +39,70 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:ems="10"
-                android:maxLines="1"
-                android:inputType="textUri" >
+                android:inputType="textUri"
+                android:maxLines="1" >
 
                 <requestFocus />
             </EditText>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Wifi Settings" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="300dp"
+            android:layout_marginBottom="10dp"
+            android:background="@drawable/layout_rounded_corners" >
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Wifi"
+                        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+                    <Switch
+                        android:id="@+id/switchWifiEnabled"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical" >
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" >
+
+                    <ListView
+                        android:id="@+id/wifiConnectionsList"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1" />
+                </ScrollView>
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
@@ -159,7 +218,7 @@
                 android:textAppearance="?android:attr/textAppearanceSmall"
                 android:textColor="#FF0000" />
         </LinearLayout>
-        
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

@@ -1,8 +1,11 @@
 package com.lqc.mylocalguide.fragments;
 
+import java.util.ArrayList;
+
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
+import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -10,15 +13,23 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import com.lqc.mylocalguide.R;
 import com.lqc.mylocalguide.login.PasswordHandler;
 import com.lqc.mylocalguide.scaling.ScalingHandler;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
+import com.lqc.mylocalguide.utilities.WifiListAdapter;
+import com.lqc.mylocalguide.wifimanagement.MyWifiManager;
 
 public class AdministrationFragment extends Fragment implements OnTouchListener {
 
@@ -40,6 +51,8 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 	int currentScale;
 	public final static String ADMINISTRATION_FRAGMENT_FLAG = "AdministrationFragmentFLAG";
 	private LinearLayout administrationFragmentContainer;
+	private ListView wifiConnectionsListView;
+	private Switch wifiEnabledSwitch;
 
 	public static AdministrationFragment getInstance() {
 		AdministrationFragment administrationFragment = new AdministrationFragment();
@@ -60,6 +73,36 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 		}
 	}
 
+	ArrayList<ScanResult> mArray;
+	
+	public void printWifiList() {
+		mArray = MyWifiManager.results;
+		ListView wifiList = (ListView)rootView.findViewById(R.id.wifiConnectionsList);
+		WifiListAdapter adapter = new WifiListAdapter(getActivity(), mArray);
+		wifiList.setAdapter(adapter);
+		wifiList.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view,
+					int position, long id) {
+				
+				/*
+				 * restart from here
+				 * 
+				ScanResult wifiProprieties = mArray.get(position);
+				String[] stringProprieties = new String[6];
+				stringProprieties[0] = wifiProprieties.SSID;
+				stringProprieties[1] = wifiProprieties.;
+				stringProprieties[2] = wifiProprieties.SSID;
+				stringProprieties[3] = wifiProprieties.SSID;
+				stringProprieties[4] = wifiProprieties.SSID;
+				stringProprieties[5] = wifiProprieties.SSID;
+				
+				*/
+			}
+		});
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -80,8 +123,42 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 					.setText(settings.getString(ConfigurationStorage.URL, ""));
 		zoomPercentageEditTxt.setText(""
 				+ settings.getInt(ConfigurationStorage.ZOOM, 0));
+		
+		wifiEnabledSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+			@Override
+			public void onCheckedChanged(CompoundButton buttonView,
+					boolean isChecked) {
+				if(isChecked) {
+					wifiManager = new MyWifiManager(getActivity());
+					wifiManager.startWifiScan();
+				} else {
+					if(wifiManager != null) {
+						wifiManager.stopWifiScan();
+					}
+				}
+			}
+		});
 
 		return rootView;
+	}
+	
+	MyWifiManager wifiManager;
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if(wifiManager != null) {
+			wifiManager.startWifiScan();
+		}
+	}
+
+	@Override
+	public void onPause() {
+		super.onPause();
+		if(wifiManager != null) {
+			wifiManager.stopWifiScan();
+		}
 	}
 
 	private void restoreState(Bundle savedInstanceState) {
@@ -98,14 +175,20 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 		urlEditTxt = (EditText) rootView.findViewById(R.id.urlEditText);
 		settings = getActivity().getSharedPreferences(
 				ConfigurationStorage.getInstance().STORAGE, 0);
+		//Wifi section
+		wifiEnabledSwitch = (Switch)rootView.findViewById(R.id.switchWifiEnabled);
+		wifiConnectionsListView = (ListView) rootView.findViewById(R.id.wifiConnectionsList);
+		//Zoom section
 		zoomPercentageEditTxt = (EditText) rootView
 				.findViewById(R.id.zoomPercentageEditTxt);
+		//Change password section
 		newAdminPasswordTxt = (EditText) rootView
 				.findViewById(R.id.newAdminPassTxtEdit);
 		confirmNewAdminPasswordTxt = (EditText) rootView
 				.findViewById(R.id.confirmNewAdminPassTxtEdit);
 		adminFeedback = (TextView) rootView
 				.findViewById(R.id.newAdminPasswordFeedback);
+		//Button section
 		save = (Button) rootView.findViewById(R.id.saveChangesBtn);
 		save.setOnClickListener(new View.OnClickListener() {
 			@Override

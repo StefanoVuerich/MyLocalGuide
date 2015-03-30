@@ -1,81 +1,46 @@
 package com.lqc.mylocalguide;
 
 import java.io.File;
-import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ActivityManager;
-import android.app.ActivityManager.RunningAppProcessInfo;
-import android.app.ActivityManager.RunningTaskInfo;
-import android.app.Fragment;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
-import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lqc.mylocalguide.broadcasting.AutoStart;
 import com.lqc.mylocalguide.fragments.AdministrationFragment;
 import com.lqc.mylocalguide.fragments.AdministrationFragment.OnActionSelected;
 import com.lqc.mylocalguide.fragments.CheckPasswordDialog;
 import com.lqc.mylocalguide.fragments.CheckPasswordDialog.ICheckPassword;
+import com.lqc.mylocalguide.fragments.CheckSettingsPasswordDialog;
+import com.lqc.mylocalguide.fragments.CheckSettingsPasswordDialog.ICheckSettingsPassword;
 import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment;
 import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment.IExitApplicationConfirm;
 import com.lqc.mylocalguide.fragments.MyWebViewFragment;
 import com.lqc.mylocalguide.fragments.NoConnectionFragment;
 import com.lqc.mylocalguide.login.LoginHandler;
+import com.lqc.mylocalguide.services.CheckWichApplicationIsFocused;
+import com.lqc.mylocalguide.services.KeepApplicationInFront;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
+import com.lqc.mylocalguide.utilities.CustomApplicationClass;
 
 public class MainActivity extends Activity implements ICheckPassword,
-		OnActionSelected, IExitApplicationConfirm, OnTouchListener {
+		OnActionSelected, IExitApplicationConfirm, OnTouchListener,
+		ICheckSettingsPassword {
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		Log.v("jajaja", "on resume");
-
-		// showNoConnectionFragment();
-
-		task = new MyTask();
-		task.execute();
-
-		firstLoop = true;
-		Log.v("jajaja",
-				"start task with boolean is cancelled = " + task.isCancelled()
-						+ task.getStatus().toString());
-		hideVirtualButtons();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-		Log.v("jajaja", "on pause");
-
-		if (task != null) {
-			boolean stopped = task.cancel(false);
-			Log.v("jajaja", "stopping task");
-		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		Log.v("jajaja", "on destroy");
-	}
+	boolean first = true;
 
 	@SuppressLint("InlinedApi")
 	private void hideVirtualButtons() {
@@ -97,56 +62,10 @@ public class MainActivity extends Activity implements ICheckPassword,
 	}
 
 	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-
-		Log.v("jajaja", "Focus changed !");
-
-		if (!hasFocus) {
-			Log.v("jajaja", "Lost focus !");
-
-			windowCloseHandler.post(windowCloserRunnable);
-		}
-	}
-
-	private void toggleRecents() {
-		Intent closeRecents = new Intent(
-				"com.android.systemui.recent.action.TOGGLE_RECENTS");
-		closeRecents.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-				| Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
-		ComponentName recents = new ComponentName("com.android.systemui",
-				"com.android.systemui.recent.RecentsActivity");
-		closeRecents.setComponent(recents);
-		this.startActivity(closeRecents);
-	}
-
-	private Handler windowCloseHandler = new Handler();
-	private Runnable windowCloserRunnable = new Runnable() {
-
-		@Override
-		public void run() {
-
-			ActivityManager am = (ActivityManager) getApplicationContext()
-					.getSystemService(Context.ACTIVITY_SERVICE);
-
-			ComponentName cn = am.getRunningTasks(1).get(0).topActivity;
-
-			if (cn != null
-					&& cn.getClassName().equals(
-							"com.android.systemui.recent.RecentsActivity")) {
-				toggleRecents();
-			}
-		}
-	};
-
-	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		Log.v("jajaja", "on create");
-
-		final Intent mainIntent = new Intent(Intent.ACTION_MAIN, null);
-		mainIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
 		initConfigurationStorage();
 
@@ -159,12 +78,50 @@ public class MainActivity extends Activity implements ICheckPassword,
 						| View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
 
 		setContentView(R.layout.activity_main);
+	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+		Log.v("jajaja", "on pause");
+		Intent intent = new Intent(this, KeepApplicationInFront.class);
+		startService(intent);
+
+		if (task != null) {
+			task.cancel(false);
+			Log.v("jajaja", "stopping task");
+		}
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Log.v("jajaja", "on resume");
+
+		task = new MyTask();
+		task.execute();
+
+		firstLoop = true;
+
+		hideVirtualButtons();
+
+		Log.v("jajaja", "boolean is: "
+				+ CustomApplicationClass.get().hasTriedToAccessSettings());
+		if (CustomApplicationClass.get().hasTriedToAccessSettings()) {
+			showSettingsPasswordDialog();
+		}
+	}
+	
+	
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		Log.v("jajaja", "on destroy");
 	}
 
 	TextView noConnectionFeedback;
-	static MyTask task;
-
+	public MyTask task;
 	boolean firstLoop;
 	boolean hasConnection;
 
@@ -184,7 +141,6 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 					Log.v("jajaja", "checking for connection");
 
- 
 					hasConnection = checkForInternetConnection(MainActivity.this);
 					if (hasConnection) {
 						showWebViewFragment();
@@ -193,11 +149,11 @@ public class MainActivity extends Activity implements ICheckPassword,
 						// if (firstLoop) {
 						showNoConnectionFragment();
 						noConnectionFeedback = (TextView) findViewById(R.id.noInternetTextView);
-						Log.v("jajaja", "show no connection fragment");
+						// Log.v("jajaja", "show no connection fragment");
 						// }
 						int seconds = 5;
 						while (seconds >= 0 && !isCancelled()) {
-							Log.v("jajaja", "seconds: " + seconds);
+							// Log.v("jajaja", "seconds: " + seconds);
 							publishProgress(seconds);
 							try {
 								Thread.sleep(1000);
@@ -236,36 +192,23 @@ public class MainActivity extends Activity implements ICheckPassword,
 	}
 
 	private void showNoConnectionFragment() {
-
-		/*
-		 * Fragment fragment = getFragmentManager().findFragmentByTag(
-		 * NoConnectionFragment.class.getSimpleName());
-		 * 
-		 * if (fragment != null) { getFragmentManager() .beginTransaction()
-		 * .replace(R.id.fragmentsContainer, NoConnectionFragment.getInstance(),
-		 * NoConnectionFragment.class.getSimpleName()) .commit(); } else {
-		 */
-
 		getFragmentManager()
 				.beginTransaction()
 				.replace(R.id.fragmentsContainer,
 						NoConnectionFragment.getInstance(),
 						NoConnectionFragment.class.getSimpleName()).commit();
-		// }
 	}
 
 	private void initConfigurationStorage() {
 		String filename = ConfigurationStorage.STORAGE_FILE_NAME;
 		String filePath = Environment.getDataDirectory().getAbsolutePath()
 				+ "/data/" + getPackageName() + "/shared_prefs/" + filename;
-		File f = new File(filePath);
+		File file = new File(filePath);
 
-		if (!f.exists()) {
+		if (!file.exists()) {
 			ConfigurationStorage.getInstance().init(this);
 		}
 	}
-
-	boolean first = true;
 
 	private boolean checkForInternetConnection(Context context) {
 		ConnectivityManager cm = (ConnectivityManager) context
@@ -277,10 +220,6 @@ public class MainActivity extends Activity implements ICheckPassword,
 			return false;
 
 		return true;
-	}
-
-	public void reCheckForConnection() {
-		checkForInternetConnection(MainActivity.this);
 	}
 
 	@Override
@@ -311,7 +250,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 		}
 	}
 
-	private void showConfirmExitDialog() {
+	public void showConfirmExitDialog() {
 		ConfirmApplicationExitFragment confirmExitDialog = ConfirmApplicationExitFragment
 				.get();
 		confirmExitDialog.show(getFragmentManager(),
@@ -324,11 +263,25 @@ public class MainActivity extends Activity implements ICheckPassword,
 		checkPasswordFragment.clearPasswordEditText();
 		checkPasswordFragment.shake();
 	}
+	
+	private void wrongSettingsPassword() {
+		CheckSettingsPasswordDialog checkSettingsPasswordFragment = (CheckSettingsPasswordDialog) getFragmentManager()
+				.findFragmentByTag(CheckSettingsPasswordDialog.TAG);
+		checkSettingsPasswordFragment.clearPasswordEditText();
+		checkSettingsPasswordFragment.shake();
+	}
 
 	@Override
 	public void onCancel() {
 		closeCheckPasswordDialog();
 
+	}
+
+	private void showSettingsPasswordDialog() {
+		CheckSettingsPasswordDialog checkSettingsPasswordDialog = CheckSettingsPasswordDialog
+				.get("admin");
+		checkSettingsPasswordDialog.show(getFragmentManager(),
+				CheckPasswordDialog.TAG);
 	}
 
 	private void closeCheckPasswordDialog() {
@@ -365,6 +318,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 	@Override
 	public void onExitApplication() {
+		CustomApplicationClass.get().setIsTryingToExitApplication(true);
 		Intent intent = new Intent();
 		intent.setAction("android.intent.action.MAIN");
 		intent.addCategory("android.intent.category.MONKEY");
@@ -393,7 +347,10 @@ public class MainActivity extends Activity implements ICheckPassword,
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.v("jajaja", "on stop receiver unregistered");
+		Log.v("jajaja", "on stop");
+		Intent intent = new Intent(this, CheckWichApplicationIsFocused.class);
+		startService(intent);
+
 	}
 
 	@Override
@@ -407,5 +364,32 @@ public class MainActivity extends Activity implements ICheckPassword,
 	protected void onRestart() {
 		super.onRestart();
 		Log.v("jajaja", "on restart");
+	}
+
+	@Override
+	public void onSettingsCheckPassword(String password) {
+		boolean isLoginCorrect = LoginHandler.getInstance().checkLogin(this,
+				"admin", password);
+
+		CustomApplicationClass.get().setHasSendedPasswordToAccessSettings(true);
+		
+		if (isLoginCorrect) {
+			onSettingsCancel();
+			Intent intent = new Intent(Settings.ACTION_SETTINGS);
+			startActivity(intent);
+		} else {
+			CustomApplicationClass.get().setHasSendedPasswordToAccessSettings(false);
+			wrongSettingsPassword();
+		}
+
+		CustomApplicationClass.get().setHasTriedToAccessSettings(false);
+	}
+
+	@Override
+	public void onSettingsCancel() {
+		CheckSettingsPasswordDialog settingsPasswordDialog = (CheckSettingsPasswordDialog) getFragmentManager()
+				.findFragmentByTag(CheckSettingsPasswordDialog.TAG);
+		settingsPasswordDialog.dismiss();
+		CustomApplicationClass.get().setHasTriedToAccessSettings(false);
 	}
 }
