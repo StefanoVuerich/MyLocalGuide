@@ -34,7 +34,7 @@ public class PasswordHandler {
 		}
 	}
 
-	/*public boolean changeUserPassword(Activity activity,
+	public boolean changeUserPassword(Activity activity,
 			String password, String confirmPassword) {
 		if (arePasswordEquals(password, confirmPassword)) {
 			((TextView) activity.findViewById(R.id.newUserPasswordFeedback)).setText("");;
@@ -45,16 +45,16 @@ public class PasswordHandler {
 			triggerPasswordNotMatchError(1, activity);
 			return false;
 		}
-	}*/
+	}
 
 	// 0 is admin, 1 is user
 	private void triggerPasswordNotMatchError(int who, Activity activity) {
 		
-		/*int feedbackTxtRef = 0;
+		int feedbackTxtRef = 0;
 		if(who == 0)
 			feedbackTxtRef = R.id.newAdminPasswordFeedback;
 		else if(who == 1) 
-			feedbackTxtRef = R.id.newUserPasswordFeedback;*/
+			feedbackTxtRef = R.id.newUserPasswordFeedback;
 		
 		TextView feedbackTxt = (TextView) activity.findViewById(R.id.newAdminPasswordFeedback);
 		feedbackTxt.setText("");

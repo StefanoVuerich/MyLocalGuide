@@ -56,7 +56,7 @@ public class ConfigurationStorage {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.putString(ADMIN_PASSWORD, "admin");
 		editor.putString(USER_PASSWORD, "user");
-		editor.putString(URL, "http://lq-creative.com/");
+		editor.putString(URL, "http://kiosk.clear-view.digital");
 		editor.putInt(ZOOM, 100);
 		editor.commit();
 	}

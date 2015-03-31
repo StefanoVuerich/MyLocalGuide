@@ -31,6 +31,7 @@ import com.lqc.mylocalguide.fragments.ConfirmApplicationExitFragment.IExitApplic
 import com.lqc.mylocalguide.fragments.MyWebViewFragment;
 import com.lqc.mylocalguide.fragments.NoConnectionFragment;
 import com.lqc.mylocalguide.login.LoginHandler;
+import com.lqc.mylocalguide.login.LoginModes;
 import com.lqc.mylocalguide.services.CheckWichApplicationIsFocused;
 import com.lqc.mylocalguide.services.KeepApplicationInFront;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
@@ -228,7 +229,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 		boolean isLoginCorrect = LoginHandler.getInstance().checkLogin(this,
 				mode_flag, password);
 
-		if (mode_flag.equals("exit")) {
+		if (mode_flag.equalsIgnoreCase(LoginModes.EXIT.name())) {
 
 			if (isLoginCorrect) {
 
@@ -238,7 +239,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 				wrongPassword();
 			}
 
-		} else if (mode_flag.equals("admin")) {
+		} else if (mode_flag.equalsIgnoreCase(LoginModes.ADMIN.name())) {
 
 			if (isLoginCorrect) {
 
@@ -369,12 +370,13 @@ public class MainActivity extends Activity implements ICheckPassword,
 	@Override
 	public void onSettingsCheckPassword(String password) {
 		boolean isLoginCorrect = LoginHandler.getInstance().checkLogin(this,
-				"admin", password);
+				LoginModes.EXIT.name(), password);
 
 		CustomApplicationClass.get().setHasSendedPasswordToAccessSettings(true);
 		
 		if (isLoginCorrect) {
 			onSettingsCancel();
+			CustomApplicationClass.get().setMustStopCheckWichApplicationInOnTop(true);
 			Intent intent = new Intent(Settings.ACTION_SETTINGS);
 			startActivity(intent);
 		} else {
@@ -383,6 +385,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 		}
 
 		CustomApplicationClass.get().setHasTriedToAccessSettings(false);
+		Log.v("jajaja", "has Tried to access setting = false");
 	}
 
 	@Override

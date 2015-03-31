@@ -43,7 +43,7 @@ public class KeepApplicationInFront extends Service implements Runnable {
 	public void run() {
 		boolean isOnTop = false;
 
-		while (!isOnTop ) {
+		while (!isOnTop) {
 			
 			if(CustomApplicationClass.get().isTryingToExitApplication()) {
 				CustomApplicationClass.get().setIsTryingToExitApplication(false);

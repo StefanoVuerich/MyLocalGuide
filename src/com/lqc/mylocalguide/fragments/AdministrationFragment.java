@@ -1,11 +1,8 @@
 package com.lqc.mylocalguide.fragments;
 
-import java.util.ArrayList;
-
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.SharedPreferences;
-import android.net.wifi.ScanResult;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -13,46 +10,48 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
-import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import com.lqc.mylocalguide.R;
 import com.lqc.mylocalguide.login.PasswordHandler;
 import com.lqc.mylocalguide.scaling.ScalingHandler;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
-import com.lqc.mylocalguide.utilities.WifiListAdapter;
-import com.lqc.mylocalguide.wifimanagement.MyWifiManager;
 
 public class AdministrationFragment extends Fragment implements OnTouchListener {
 
-	public final static String _TAG = "AdministrationFragment";
-
+	public final static String ADMINISTRATION_FRAGMENT_FLAG = "AdministrationFragmentFLAG";
+	public final static String _TAG = AdministrationFragment.class
+			.getSimpleName();
+	// Url
 	private static final String URL_SCHEME = "http://";
+	private static final String APPLICATION_URL_TAG = "APPLICATION_URL_TAG";
+	// Zoom
+	private static final String ZOOM_TAG = "ZOOM_TAG";
+	int currentScale;
+	// Admin password change variables
 	private static final String ADMIN_FEEDBACK = "AdminFeedback";
 	private static final String CONFIRM_NEW_ADMIN_PASSWORD_TAG = "CONFIRM_NEW_ADMIN_PASSWORD_TAG";
 	private static final String NEW_ADMIN_PASSWORD_TAG = "NEW_ADMIN_PASSWORD_TAG";
-	private static final String ZOOM_TAG = "ZOOM_TAG";
-	private static final String APPLICATION_URL_TAG = "APPLICATION_URL_TAG";
+	// User password change variables
+	private static final String USER_FEEDBACK = "UserFeedback";
+	private static final String CONFIRM_NEW_USER_PASSWORD_TAG = "CONFIRM_NEW_USER_PASSWORD_TAG";
+	private static final String NEW_USER_PASSWORD_TAG = "NEW_USER_PASSWORD_TAG";
+	// Shared preferences
 	SharedPreferences settings;
-	private EditText zoomPercentageEditTxt, urlEditTxt, newAdminPasswordTxt,
-			confirmNewAdminPasswordTxt;
-	private Button save, cancel, exitApp;
+	// Callbacks
 	private OnActionSelected mCallback;
-	private TextView adminFeedback;
+	// Views
+	private EditText zoomPercentageEditTxt, urlEditTxt, newAdminPasswordTxt,
+			confirmNewAdminPasswordTxt, newUserPasswordTxt,
+			confirmNewUserPasswordTxt;
+	private Button save, cancel, exitApp;
+	private TextView adminFeedback, userFeedback;
 	private View rootView;
-	int currentScale;
-	public final static String ADMINISTRATION_FRAGMENT_FLAG = "AdministrationFragmentFLAG";
 	private LinearLayout administrationFragmentContainer;
-	private ListView wifiConnectionsListView;
-	private Switch wifiEnabledSwitch;
+
 
 	public static AdministrationFragment getInstance() {
 		AdministrationFragment administrationFragment = new AdministrationFragment();
@@ -61,7 +60,6 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 
 	public interface OnActionSelected {
 		public void onSave();
-
 		public void onCancelSave();
 	}
 
@@ -73,36 +71,6 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 		}
 	}
 
-	ArrayList<ScanResult> mArray;
-	
-	public void printWifiList() {
-		mArray = MyWifiManager.results;
-		ListView wifiList = (ListView)rootView.findViewById(R.id.wifiConnectionsList);
-		WifiListAdapter adapter = new WifiListAdapter(getActivity(), mArray);
-		wifiList.setAdapter(adapter);
-		wifiList.setOnItemClickListener(new OnItemClickListener() {
-
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				
-				/*
-				 * restart from here
-				 * 
-				ScanResult wifiProprieties = mArray.get(position);
-				String[] stringProprieties = new String[6];
-				stringProprieties[0] = wifiProprieties.SSID;
-				stringProprieties[1] = wifiProprieties.;
-				stringProprieties[2] = wifiProprieties.SSID;
-				stringProprieties[3] = wifiProprieties.SSID;
-				stringProprieties[4] = wifiProprieties.SSID;
-				stringProprieties[5] = wifiProprieties.SSID;
-				
-				*/
-			}
-		});
-	}
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -123,42 +91,20 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 					.setText(settings.getString(ConfigurationStorage.URL, ""));
 		zoomPercentageEditTxt.setText(""
 				+ settings.getInt(ConfigurationStorage.ZOOM, 0));
-		
-		wifiEnabledSwitch.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
-			@Override
-			public void onCheckedChanged(CompoundButton buttonView,
-					boolean isChecked) {
-				if(isChecked) {
-					wifiManager = new MyWifiManager(getActivity());
-					wifiManager.startWifiScan();
-				} else {
-					if(wifiManager != null) {
-						wifiManager.stopWifiScan();
-					}
-				}
-			}
-		});
+		
 
 		return rootView;
 	}
-	
-	MyWifiManager wifiManager;
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		if(wifiManager != null) {
-			wifiManager.startWifiScan();
-		}
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		if(wifiManager != null) {
-			wifiManager.stopWifiScan();
-		}
 	}
 
 	private void restoreState(Bundle savedInstanceState) {
@@ -168,27 +114,36 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 				.getString(NEW_ADMIN_PASSWORD_TAG));
 		confirmNewAdminPasswordTxt.setText(savedInstanceState
 				.getString(CONFIRM_NEW_ADMIN_PASSWORD_TAG));
+		newUserPasswordTxt.setText(savedInstanceState
+				.getString(NEW_USER_PASSWORD_TAG));
+		confirmNewUserPasswordTxt.setText(savedInstanceState
+				.getString(CONFIRM_NEW_USER_PASSWORD_TAG));
 		adminFeedback.setText(savedInstanceState.getString(ADMIN_FEEDBACK));
+		userFeedback.setText(savedInstanceState.getString(USER_FEEDBACK));
 	}
 
 	private void initView() {
 		urlEditTxt = (EditText) rootView.findViewById(R.id.urlEditText);
 		settings = getActivity().getSharedPreferences(
 				ConfigurationStorage.getInstance().STORAGE, 0);
-		//Wifi section
-		wifiEnabledSwitch = (Switch)rootView.findViewById(R.id.switchWifiEnabled);
-		wifiConnectionsListView = (ListView) rootView.findViewById(R.id.wifiConnectionsList);
-		//Zoom section
+		// Zoom section
 		zoomPercentageEditTxt = (EditText) rootView
 				.findViewById(R.id.zoomPercentageEditTxt);
-		//Change password section
+		// Change admin password section
 		newAdminPasswordTxt = (EditText) rootView
 				.findViewById(R.id.newAdminPassTxtEdit);
 		confirmNewAdminPasswordTxt = (EditText) rootView
 				.findViewById(R.id.confirmNewAdminPassTxtEdit);
 		adminFeedback = (TextView) rootView
 				.findViewById(R.id.newAdminPasswordFeedback);
-		//Button section
+		// Change user password section
+		newUserPasswordTxt = (EditText) rootView
+				.findViewById(R.id.newUserPassTxtEdit);
+		confirmNewUserPasswordTxt = (EditText) rootView
+				.findViewById(R.id.confirmNewUserPassTxtEdit);
+		userFeedback = (TextView) rootView
+				.findViewById(R.id.newUserPasswordFeedback);
+		// Button section
 		save = (Button) rootView.findViewById(R.id.saveChangesBtn);
 		save.setOnClickListener(new View.OnClickListener() {
 			@Override
@@ -222,6 +177,9 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 		String newAdminPassword = newAdminPasswordTxt.getText().toString();
 		String confirmNewAdminPassword = confirmNewAdminPasswordTxt.getText()
 				.toString();
+		String newUserPassword = newUserPasswordTxt.getText().toString();
+		String confirmNewUserPassword = confirmNewUserPasswordTxt.getText()
+				.toString();
 		int parsedZoom = 0;
 		if (!zoom.equals(""))
 			parsedZoom = Integer.parseInt(zoom);
@@ -239,8 +197,8 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 			updateZoom(parsedZoom);
 		}
 
-		boolean adminPasswordSaved = false;
 		// update admin password
+		boolean adminPasswordSaved = false;
 		if (!(isEmptyString(newAdminPassword) && isEmptyString(confirmNewAdminPassword))) {
 			adminPasswordSaved = updateAdminPassword(newAdminPassword,
 					confirmNewAdminPassword);
@@ -254,6 +212,20 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 				mCallback.onSave();
 		}
 
+		// update user password
+		boolean userPasswordSaved = false;
+		if (!(isEmptyString(newUserPassword) && isEmptyString(confirmNewUserPassword))) {
+			userPasswordSaved = updateUserPassword(newUserPassword,
+					confirmNewUserPassword);
+		} else {
+			resetFeedback(1);
+			userPasswordSaved = true;
+		}
+
+		if (mCallback != null) {
+			if (adminPasswordSaved && userPasswordSaved)
+				mCallback.onSave();
+		}
 	}
 
 	private void showConfirmExitDialog() {
@@ -271,15 +243,26 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 		return false;
 	}
 
-	private void resetFeedback(int which) {
-		TextView feedback = (TextView) rootView
-				.findViewById(R.id.newAdminPasswordFeedback);
-		feedback.setText("");
-	}
+	// 0 is admin, 1 is user
+		private void resetFeedback(int which) {
+			int feedbackToReset = 0;
+			if (which == 0) {
+				feedbackToReset = R.id.newAdminPasswordFeedback;
+			} else {
+				feedbackToReset = R.id.newUserPasswordFeedback;
+			}
+			TextView feedback = (TextView) rootView.findViewById(feedbackToReset);
+			feedback.setText("");
+		}
 
 	private boolean updateAdminPassword(String password, String confirmPassword) {
 
 		return PasswordHandler.getInstance().changeAdminPassword(getActivity(),
+				password, confirmPassword);
+	}
+	
+	private boolean updateUserPassword(String password, String confirmPassword) {
+		return PasswordHandler.getInstance().changeUserPassword(getActivity(),
 				password, confirmPassword);
 	}
 
@@ -307,8 +290,13 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 				.toString());
 		vBundle.putString(CONFIRM_NEW_ADMIN_PASSWORD_TAG,
 				confirmNewAdminPasswordTxt.getText().toString());
+		vBundle.putString(NEW_USER_PASSWORD_TAG, newUserPasswordTxt.getText()
+				.toString());
+		vBundle.putString(CONFIRM_NEW_USER_PASSWORD_TAG,
+				confirmNewUserPasswordTxt.getText().toString());
 		// saving feedbacks*/
 		vBundle.putString(ADMIN_FEEDBACK, adminFeedback.getText().toString());
+		vBundle.putString(USER_FEEDBACK, userFeedback.getText().toString());
 		outState.putAll(vBundle);
 
 		outState.putString(_TAG, "Restore");
@@ -333,6 +321,5 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 		super.onStop();
 		hideVirtualKeyboard();
 	}
-	
-	
+
 }

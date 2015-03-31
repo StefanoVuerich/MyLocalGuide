@@ -75,8 +75,8 @@ public class MyWebViewFragment extends Fragment {
 
 			@Override
 			public boolean shouldOverrideUrlLoading(WebView view, String url) {
-				if (url.startsWith("http://kiosk.my-local.guide/_admin")) {
-					if (url.endsWith("/_admin")) {
+				if (url.startsWith("http")) {
+					if (url.endsWith("/_kiosk-admin/")) {
 						showCheckPasswordDialog("admin");
 						return true;
 					}
