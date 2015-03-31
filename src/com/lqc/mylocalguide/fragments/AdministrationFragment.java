@@ -207,11 +207,6 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 			adminPasswordSaved = true;
 		}
 
-		if (mCallback != null) {
-			if (adminPasswordSaved/* && userPasswordSaved */)
-				mCallback.onSave();
-		}
-
 		// update user password
 		boolean userPasswordSaved = false;
 		if (!(isEmptyString(newUserPassword) && isEmptyString(confirmNewUserPassword))) {
@@ -311,7 +306,7 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 
 	public void hideVirtualKeyboard() {
 		InputMethodManager imm = (InputMethodManager) getActivity()
-				.getSystemService(getActivity().INPUT_METHOD_SERVICE);
+				.getSystemService(Activity.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(
 				administrationFragmentContainer.getWindowToken(), 2);
 	}

@@ -5,7 +5,7 @@ import android.app.Application;
 
 public class CustomApplicationClass extends Application {
 	
-	private boolean mustStopCheckWichApplicationInOnTop;
+	private boolean mustStopCheckIfSettingsInOnTop;
 	private boolean isTryingToExitApplication;
 	private boolean flagHasTriedToAccessSettings;
 	private boolean flagHasSendedPasswordToAccessSettings;
@@ -29,13 +29,13 @@ public class CustomApplicationClass extends Application {
 		flagHasSendedPasswordToAccessSettings = false;
 	}
 	
-	public boolean mustStopCheckWichApplicationInOnTop() {
-		return mustStopCheckWichApplicationInOnTop;
+	public boolean mustStopCheckIfSettingsIsOnTop() {
+		return mustStopCheckIfSettingsInOnTop;
 	}
 
-	public void setMustStopCheckWichApplicationInOnTop(
+	public void setMustStopCheckIfSettingsIsOnTop(
 			boolean mustStopCheckWichApplicationInOnTop) {
-		this.mustStopCheckWichApplicationInOnTop = mustStopCheckWichApplicationInOnTop;
+		this.mustStopCheckIfSettingsInOnTop = mustStopCheckWichApplicationInOnTop;
 	}
 
 	public boolean isTryingToExitApplication() {

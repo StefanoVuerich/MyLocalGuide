@@ -106,14 +106,17 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 		hideVirtualButtons();
 
+		if (CustomApplicationClass.get().mustStopCheckIfSettingsIsOnTop()) {
+			CustomApplicationClass.get().setMustStopCheckIfSettingsIsOnTop(
+					false);
+		}
 		Log.v("jajaja", "boolean is: "
 				+ CustomApplicationClass.get().hasTriedToAccessSettings());
 		if (CustomApplicationClass.get().hasTriedToAccessSettings()) {
+			Log.v("jajaja", "if boolean is true, apro finestra");
 			showSettingsPasswordDialog();
 		}
 	}
-	
-	
 
 	@Override
 	protected void onDestroy() {
@@ -264,7 +267,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 		checkPasswordFragment.clearPasswordEditText();
 		checkPasswordFragment.shake();
 	}
-	
+
 	private void wrongSettingsPassword() {
 		CheckSettingsPasswordDialog checkSettingsPasswordFragment = (CheckSettingsPasswordDialog) getFragmentManager()
 				.findFragmentByTag(CheckSettingsPasswordDialog.TAG);
@@ -373,14 +376,16 @@ public class MainActivity extends Activity implements ICheckPassword,
 				LoginModes.EXIT.name(), password);
 
 		CustomApplicationClass.get().setHasSendedPasswordToAccessSettings(true);
-		
+
 		if (isLoginCorrect) {
 			onSettingsCancel();
-			CustomApplicationClass.get().setMustStopCheckWichApplicationInOnTop(true);
+			CustomApplicationClass.get()
+					.setMustStopCheckIfSettingsIsOnTop(true);
 			Intent intent = new Intent(Settings.ACTION_SETTINGS);
 			startActivity(intent);
 		} else {
-			CustomApplicationClass.get().setHasSendedPasswordToAccessSettings(false);
+			CustomApplicationClass.get().setHasSendedPasswordToAccessSettings(
+					false);
 			wrongSettingsPassword();
 		}
 

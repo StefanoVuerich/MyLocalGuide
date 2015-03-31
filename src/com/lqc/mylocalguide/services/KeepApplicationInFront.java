@@ -55,12 +55,18 @@ public class KeepApplicationInFront extends Service implements Runnable {
 			
 			
 			if (topActivity != null
-					&& topActivity.getClassName().equals(
-							"com.android.settings.Settings")) {
-				Log.v("jajaja", "settings discovered");
+					&& (topActivity.getClassName().equals(
+							"com.android.internal.app.ResolverActivity")
+							||
+							(topActivity.getClassName().equals(
+									"com.android.settings.Settings")
+							))) {
+				
 				
 				CustomApplicationClass.get().setHasTriedToAccessSettings(
 						true);
+				
+				Log.v("jajaja", "settings discovered sethastried is true");
 				
 				if (CustomApplicationClass.get().hasTriedToAccessSettings()) {
 					

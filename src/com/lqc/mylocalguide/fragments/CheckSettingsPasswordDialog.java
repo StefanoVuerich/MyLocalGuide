@@ -17,10 +17,10 @@ import com.lqc.mylocalguide.R;
 
 public class CheckSettingsPasswordDialog extends DialogFragment {
 
+	private String mode_FLAG = "";
 	private View rootView;
 	public static final String TAG = "CheckPasswordDialog";
 	private static final String CHECKSETTINGSPASSWORD_DIALOG_FRAGMENT_FLAG = "CheckSettingsPasswordDialogFragmentFLAG";
-	private String mode_FLAG;
 	private ICheckSettingsPassword mCallback;
 
 	public interface ICheckSettingsPassword {

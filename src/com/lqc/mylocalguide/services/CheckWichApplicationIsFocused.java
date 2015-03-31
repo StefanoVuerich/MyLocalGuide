@@ -1,11 +1,15 @@
 package com.lqc.mylocalguide.services;
 
+import java.util.List;
+
 import android.app.ActivityManager;
 import android.app.Service;
+import android.app.ActivityManager.RunningTaskInfo;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
+import android.util.Log;
 
 import com.lqc.mylocalguide.MainActivity;
 import com.lqc.mylocalguide.utilities.CustomApplicationClass;
@@ -40,27 +44,50 @@ public class CheckWichApplicationIsFocused extends Service implements Runnable {
 
 		boolean notAllowedApplicationIntercepted = false;
 
-		while (!notAllowedApplicationIntercepted
-				&& !CustomApplicationClass.get()
-						.mustStopCheckWichApplicationInOnTop()) {
+		while (!notAllowedApplicationIntercepted) {
 
 			ComponentName activityOnTop = activityManager.getRunningTasks(1)
 					.get(0).topActivity;
+			
+			Log.v("jajaja", "service is running");
+			
+			if(activityOnTop.getClassName().equals("com.android.settings.Settings")) {
+				continue;
+			}
+
+			Log.v("jajaja", "service is running. Component at top is: "
+					+ activityOnTop.getClassName());
 
 			if (activityOnTop != null
 					&& !((activityOnTop.getClassName().equals(LAUNCHER_PACKAGE)) || (activityOnTop
 							.equals(MAIN_ACTIVITY_PACKAGE)))) {
-				
-				Intent intent = new Intent(getApplicationContext(),
-						MainActivity.class);
 
-				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				startActivity(intent);
-				notAllowedApplicationIntercepted = true;
-				break;
+				Log.v("jajaja", "must stop settings is " + CustomApplicationClass.get().mustStopCheckIfSettingsIsOnTop());
+				
+				if (CustomApplicationClass.get()
+						.mustStopCheckIfSettingsIsOnTop() && activityOnTop.getClassName().equals("com.android.systemui.recent.RecentsActivity")) {
+					
+					List<RunningTaskInfo> runningTasks = activityManager
+							.getRunningTasks(2);
+					RunningTaskInfo programActivity = runningTasks.get(1);
+					activityManager.moveTaskToFront(programActivity.id,
+							ActivityManager.MOVE_TASK_NO_USER_ACTION);
+					
+					Log.v("jajaja", "moved " + programActivity.getClass().getName() + " to top");
+					continue;
+					
+				} else {
+
+					Intent intent = new Intent(getApplicationContext(),
+							MainActivity.class);
+
+					intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+					startActivity(intent);
+					notAllowedApplicationIntercepted = true;
+					break;
+				}
 			}
 		}
-		CustomApplicationClass.get().setMustStopCheckWichApplicationInOnTop(
-				false);
+		//CustomApplicationClass.get().setMustStopCheckIfSettingsIsOnTop(false);
 	}
 }

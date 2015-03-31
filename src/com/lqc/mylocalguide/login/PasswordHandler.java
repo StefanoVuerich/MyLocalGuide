@@ -56,7 +56,7 @@ public class PasswordHandler {
 		else if(who == 1) 
 			feedbackTxtRef = R.id.newUserPasswordFeedback;
 		
-		TextView feedbackTxt = (TextView) activity.findViewById(R.id.newAdminPasswordFeedback);
+		TextView feedbackTxt = (TextView) activity.findViewById(feedbackTxtRef);
 		feedbackTxt.setText("");
 		feedbackTxt.setText(ERROR_FEEDBACK);
 	}

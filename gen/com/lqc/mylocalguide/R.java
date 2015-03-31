@@ -22,8 +22,8 @@ public final class R {
          would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively).
     
          */
-        public static final int activity_horizontal_margin=0x7f060000;
-        public static final int activity_vertical_margin=0x7f060001;
+        public static final int activity_horizontal_margin=0x7f050000;
+        public static final int activity_vertical_margin=0x7f050001;
     }
     public static final class drawable {
         public static final int button_100px=0x7f020000;
@@ -33,44 +33,44 @@ public final class R {
         public static final int no_internet_connection=0x7f020004;
     }
     public static final class id {
-        public static final int RelativeLayout1=0x7f0a001f;
-        public static final int TextView01=0x7f0a000a;
-        public static final int administrationFragmentContainerLayout=0x7f0a0009;
-        public static final int cancelBtn=0x7f0a0005;
-        public static final int cancelChangesBtn=0x7f0a001d;
-        public static final int cancelExitAppBtn=0x7f0a0007;
-        public static final int changeAdminPasswordLabel=0x7f0a0010;
-        public static final int changeUserPasswordLabel=0x7f0a0016;
-        public static final int checkPasswordLayout=0x7f0a0001;
-        public static final int confirmNewAdminPassLbl=0x7f0a0013;
-        public static final int confirmNewAdminPassTxtEdit=0x7f0a0014;
-        public static final int confirmNewUserPassLbl=0x7f0a0019;
-        public static final int confirmNewUserPassTxtEdit=0x7f0a001a;
-        public static final int exitAppBtn=0x7f0a0006;
-        public static final int exitAppButton=0x7f0a001e;
-        public static final int exitNoInternetFragment=0x7f0a0022;
-        public static final int fragmentsContainer=0x7f0a0000;
-        public static final int insertPasswordEditTxt=0x7f0a0003;
-        public static final int insertPasswordLabel=0x7f0a0002;
-        public static final int loginBtn=0x7f0a0004;
-        public static final int mWebView=0x7f0a0025;
-        public static final int newAdminPassLbl=0x7f0a0011;
-        public static final int newAdminPassTxtEdit=0x7f0a0012;
-        public static final int newAdminPasswordFeedback=0x7f0a0015;
-        public static final int newUserPassLbl=0x7f0a0017;
-        public static final int newUserPassTxtEdit=0x7f0a0018;
-        public static final int newUserPasswordFeedback=0x7f0a001b;
-        public static final int noInternetImageView=0x7f0a0020;
-        public static final int noInternetTextView=0x7f0a0021;
-        public static final int percentageLabel=0x7f0a000f;
-        public static final int progressBar=0x7f0a0024;
-        public static final int saveChangesBtn=0x7f0a001c;
-        public static final int scrollView1=0x7f0a0008;
-        public static final int urlEditLabel=0x7f0a000b;
-        public static final int urlEditText=0x7f0a000c;
-        public static final int webViewFragment=0x7f0a0023;
-        public static final int zoomLabel=0x7f0a000d;
-        public static final int zoomPercentageEditTxt=0x7f0a000e;
+        public static final int RelativeLayout1=0x7f09001f;
+        public static final int TextView01=0x7f09000a;
+        public static final int administrationFragmentContainerLayout=0x7f090009;
+        public static final int cancelBtn=0x7f090005;
+        public static final int cancelChangesBtn=0x7f09001d;
+        public static final int cancelExitAppBtn=0x7f090007;
+        public static final int changeAdminPasswordLabel=0x7f090010;
+        public static final int changeUserPasswordLabel=0x7f090016;
+        public static final int checkPasswordLayout=0x7f090001;
+        public static final int confirmNewAdminPassLbl=0x7f090013;
+        public static final int confirmNewAdminPassTxtEdit=0x7f090014;
+        public static final int confirmNewUserPassLbl=0x7f090019;
+        public static final int confirmNewUserPassTxtEdit=0x7f09001a;
+        public static final int exitAppBtn=0x7f090006;
+        public static final int exitAppButton=0x7f09001e;
+        public static final int exitNoInternetFragment=0x7f090022;
+        public static final int fragmentsContainer=0x7f090000;
+        public static final int insertPasswordEditTxt=0x7f090003;
+        public static final int insertPasswordLabel=0x7f090002;
+        public static final int loginBtn=0x7f090004;
+        public static final int mWebView=0x7f090025;
+        public static final int newAdminPassLbl=0x7f090011;
+        public static final int newAdminPassTxtEdit=0x7f090012;
+        public static final int newAdminPasswordFeedback=0x7f090015;
+        public static final int newUserPassLbl=0x7f090017;
+        public static final int newUserPassTxtEdit=0x7f090018;
+        public static final int newUserPasswordFeedback=0x7f09001b;
+        public static final int noInternetImageView=0x7f090020;
+        public static final int noInternetTextView=0x7f090021;
+        public static final int percentageLabel=0x7f09000f;
+        public static final int progressBar=0x7f090024;
+        public static final int saveChangesBtn=0x7f09001c;
+        public static final int scrollView1=0x7f090008;
+        public static final int urlEditLabel=0x7f09000b;
+        public static final int urlEditText=0x7f09000c;
+        public static final int webViewFragment=0x7f090023;
+        public static final int zoomLabel=0x7f09000d;
+        public static final int zoomPercentageEditTxt=0x7f09000e;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
@@ -82,14 +82,10 @@ public final class R {
         public static final int wifi_connection_dialog_layout=0x7f030006;
     }
     public static final class menu {
-        public static final int main=0x7f090000;
-    }
-    public static final class raw {
-        public static final int first=0x7f050000;
-        public static final int small=0x7f050001;
+        public static final int main=0x7f080000;
     }
     public static final class string {
-        public static final int app_name=0x7f070000;
+        public static final int app_name=0x7f060000;
     }
     public static final class style {
         /** 
@@ -113,15 +109,15 @@ public final class R {
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f080000;
+        public static final int AppBaseTheme=0x7f070000;
         /**  Application theme. 
          */
-        public static final int AppTheme=0x7f080001;
+        public static final int AppTheme=0x7f070001;
         /**  TextView form administration fragment theme 
          */
-        public static final int administrationFragmentTextView=0x7f080002;
+        public static final int administrationFragmentTextView=0x7f070002;
         /**  TextView title administration fragment theme 
          */
-        public static final int administrationFragmentTitleTextView=0x7f080003;
+        public static final int administrationFragmentTitleTextView=0x7f070003;
     }
 }
