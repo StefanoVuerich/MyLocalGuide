@@ -14,11 +14,8 @@ import android.os.Environment;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.lqc.mylocalguide.fragments.AdministrationFragment;
 import com.lqc.mylocalguide.fragments.AdministrationFragment.OnActionSelected;
@@ -32,16 +29,15 @@ import com.lqc.mylocalguide.fragments.MyWebViewFragment;
 import com.lqc.mylocalguide.fragments.NoConnectionFragment;
 import com.lqc.mylocalguide.login.LoginHandler;
 import com.lqc.mylocalguide.login.LoginModes;
-import com.lqc.mylocalguide.services.CheckWichApplicationIsFocused;
-import com.lqc.mylocalguide.services.KeepApplicationInFront;
+import com.lqc.mylocalguide.services.BaseKeepApplicationInFront;
+import com.lqc.mylocalguide.services.OutOfApplicationService;
+import com.lqc.mylocalguide.services.SettingsLevelService;
 import com.lqc.mylocalguide.storage.ConfigurationStorage;
 import com.lqc.mylocalguide.utilities.CustomApplicationClass;
 
 public class MainActivity extends Activity implements ICheckPassword,
-		OnActionSelected, IExitApplicationConfirm, OnTouchListener,
+		OnActionSelected, IExitApplicationConfirm ,
 		ICheckSettingsPassword {
-
-	boolean first = true;
 
 	@SuppressLint("InlinedApi")
 	private void hideVirtualButtons() {
@@ -66,8 +62,6 @@ public class MainActivity extends Activity implements ICheckPassword,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		Log.v("jajaja", "on create");
-
 		initConfigurationStorage();
 
 		getWindow().getDecorView().setSystemUiVisibility(
@@ -84,20 +78,18 @@ public class MainActivity extends Activity implements ICheckPassword,
 	@Override
 	protected void onPause() {
 		super.onPause();
-		Log.v("jajaja", "on pause");
-		Intent intent = new Intent(this, KeepApplicationInFront.class);
-		startService(intent);
 
 		if (task != null) {
 			task.cancel(false);
-			Log.v("jajaja", "stopping task");
 		}
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
-		Log.v("jajaja", "on resume");
+
+		if (CustomApplicationClass.get().isTryingToExitApplication())
+			CustomApplicationClass.get().setIsTryingToExitApplication(false);
 
 		task = new MyTask();
 		task.execute();
@@ -110,18 +102,11 @@ public class MainActivity extends Activity implements ICheckPassword,
 			CustomApplicationClass.get().setMustStopCheckIfSettingsIsOnTop(
 					false);
 		}
-		Log.v("jajaja", "boolean is: "
-				+ CustomApplicationClass.get().hasTriedToAccessSettings());
+		
 		if (CustomApplicationClass.get().hasTriedToAccessSettings()) {
-			Log.v("jajaja", "if boolean is true, apro finestra");
-			showSettingsPasswordDialog();
+			if(getFragmentManager().findFragmentByTag(CheckSettingsPasswordDialog._TAG) == null)
+				showSettingsPasswordDialog();
 		}
-	}
-
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		Log.v("jajaja", "on destroy");
 	}
 
 	TextView noConnectionFeedback;
@@ -143,36 +128,30 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 				while (!isCancelled() && !hasConnection) {
 
-					Log.v("jajaja", "checking for connection");
-
 					hasConnection = checkForInternetConnection(MainActivity.this);
-					if (hasConnection) {
+					if (hasConnection) 
+					{
 						showWebViewFragment();
 						break;
-					} else {
-						// if (firstLoop) {
+					} 
+					else 
+					{
 						showNoConnectionFragment();
 						noConnectionFeedback = (TextView) findViewById(R.id.noInternetTextView);
-						// Log.v("jajaja", "show no connection fragment");
-						// }
 						int seconds = 5;
 						while (seconds >= 0 && !isCancelled()) {
-							// Log.v("jajaja", "seconds: " + seconds);
 							publishProgress(seconds);
 							try {
 								Thread.sleep(1000);
 							} catch (InterruptedException e) {
-								// TODO Auto-generated catch block
 								e.printStackTrace();
 							}
 							--seconds;
 						}
 						firstLoop = false;
 					}
-
 				}
 			}
-
 			return null;
 		}
 
@@ -192,7 +171,6 @@ public class MainActivity extends Activity implements ICheckPassword,
 						.setText("No Internet Connection, retry in " + count);
 			}
 		}
-
 	}
 
 	private void showNoConnectionFragment() {
@@ -270,7 +248,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 	private void wrongSettingsPassword() {
 		CheckSettingsPasswordDialog checkSettingsPasswordFragment = (CheckSettingsPasswordDialog) getFragmentManager()
-				.findFragmentByTag(CheckSettingsPasswordDialog.TAG);
+				.findFragmentByTag(CheckSettingsPasswordDialog._TAG);
 		checkSettingsPasswordFragment.clearPasswordEditText();
 		checkSettingsPasswordFragment.shake();
 	}
@@ -278,14 +256,13 @@ public class MainActivity extends Activity implements ICheckPassword,
 	@Override
 	public void onCancel() {
 		closeCheckPasswordDialog();
-
 	}
 
 	private void showSettingsPasswordDialog() {
 		CheckSettingsPasswordDialog checkSettingsPasswordDialog = CheckSettingsPasswordDialog
 				.get("admin");
 		checkSettingsPasswordDialog.show(getFragmentManager(),
-				CheckPasswordDialog.TAG);
+				CheckSettingsPasswordDialog._TAG);
 	}
 
 	private void closeCheckPasswordDialog() {
@@ -322,11 +299,18 @@ public class MainActivity extends Activity implements ICheckPassword,
 
 	@Override
 	public void onExitApplication() {
+		// stop infinite check loop
 		CustomApplicationClass.get().setIsTryingToExitApplication(true);
-		Intent intent = new Intent();
-		intent.setAction("android.intent.action.MAIN");
-		intent.addCategory("android.intent.category.MONKEY");
-		startActivity(intent);
+		Intent stopServiceIntent = new Intent(this,
+				BaseKeepApplicationInFront.class);
+		if (stopService(stopServiceIntent))
+			Log.v("jajaja", "service have been stopped");
+
+		Intent showDesktopIntent = new Intent();
+		showDesktopIntent.setAction("android.intent.action.MAIN");
+		showDesktopIntent.addCategory("android.intent.category.MONKEY");
+		startActivity(showDesktopIntent);
+
 		closeConfirmExitApplicationFragment();
 		showWebViewFragment();
 	}
@@ -343,31 +327,40 @@ public class MainActivity extends Activity implements ICheckPassword,
 	}
 
 	@Override
-	public boolean onTouch(View v, MotionEvent event) {
-		Toast.makeText(MainActivity.this, "touch", Toast.LENGTH_LONG).show();
-		return false;
+	protected void onStart() {
+		super.onStart();
+		
+		Intent secondLevelService = new Intent(this, SettingsLevelService.class);
+		if (stopService(secondLevelService))
+			Log.v("jajaja", "settings level service destroyed");
+		
+		Intent outOfAppLevelService = new Intent(this, OutOfApplicationService.class);
+		if (stopService(outOfAppLevelService))
+			Log.v("jajaja", " outOfAppLevelService service destroyed");
+
+		if (CustomApplicationClass.get().isTryingToExitApplication())
+			CustomApplicationClass.get().setIsTryingToExitApplication(false);
+
+		Intent baseServiceIntent = new Intent(this,
+				BaseKeepApplicationInFront.class);
+		startService(baseServiceIntent);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
-		Log.v("jajaja", "on stop");
-		Intent intent = new Intent(this, CheckWichApplicationIsFocused.class);
-		startService(intent);
+		
+		Intent baseServiceIntent = new Intent(this,
+				BaseKeepApplicationInFront.class);
+		if (stopService(baseServiceIntent))
+			Log.v("jajaja", "base service destroyed");
 
-	}
+		Intent secondLevelService = new Intent(this, SettingsLevelService.class);
+		startService(secondLevelService);
 
-	@Override
-	protected void onStart() {
-		super.onStart();
-		Log.v("jajaja", "on start");
-
-	}
-
-	@Override
-	protected void onRestart() {
-		super.onRestart();
-		Log.v("jajaja", "on restart");
+		Intent outOfAppLevelService = new Intent(this,
+				OutOfApplicationService.class);
+		startService(outOfAppLevelService);
 	}
 
 	@Override
@@ -381,6 +374,7 @@ public class MainActivity extends Activity implements ICheckPassword,
 			onSettingsCancel();
 			CustomApplicationClass.get()
 					.setMustStopCheckIfSettingsIsOnTop(true);
+			CustomApplicationClass.get().isLoginSettingsoccupied = false;
 			Intent intent = new Intent(Settings.ACTION_SETTINGS);
 			startActivity(intent);
 		} else {
@@ -388,15 +382,13 @@ public class MainActivity extends Activity implements ICheckPassword,
 					false);
 			wrongSettingsPassword();
 		}
-
 		CustomApplicationClass.get().setHasTriedToAccessSettings(false);
-		Log.v("jajaja", "has Tried to access setting = false");
 	}
 
 	@Override
 	public void onSettingsCancel() {
 		CheckSettingsPasswordDialog settingsPasswordDialog = (CheckSettingsPasswordDialog) getFragmentManager()
-				.findFragmentByTag(CheckSettingsPasswordDialog.TAG);
+				.findFragmentByTag(CheckSettingsPasswordDialog._TAG);
 		settingsPasswordDialog.dismiss();
 		CustomApplicationClass.get().setHasTriedToAccessSettings(false);
 	}

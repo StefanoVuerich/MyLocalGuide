@@ -19,7 +19,7 @@ public class CheckSettingsPasswordDialog extends DialogFragment {
 
 	private String mode_FLAG = "";
 	private View rootView;
-	public static final String TAG = "CheckPasswordDialog";
+	public static final String _TAG = DialogFragment.class.getSimpleName();
 	private static final String CHECKSETTINGSPASSWORD_DIALOG_FRAGMENT_FLAG = "CheckSettingsPasswordDialogFragmentFLAG";
 	private ICheckSettingsPassword mCallback;
 

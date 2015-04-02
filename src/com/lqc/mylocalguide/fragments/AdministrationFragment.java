@@ -52,7 +52,6 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 	private View rootView;
 	private LinearLayout administrationFragmentContainer;
 
-
 	public static AdministrationFragment getInstance() {
 		AdministrationFragment administrationFragment = new AdministrationFragment();
 		return administrationFragment;
@@ -60,6 +59,7 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 
 	public interface OnActionSelected {
 		public void onSave();
+
 		public void onCancelSave();
 	}
 
@@ -92,19 +92,7 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 		zoomPercentageEditTxt.setText(""
 				+ settings.getInt(ConfigurationStorage.ZOOM, 0));
 
-		
-
 		return rootView;
-	}
-
-	@Override
-	public void onResume() {
-		super.onResume();
-	}
-
-	@Override
-	public void onPause() {
-		super.onPause();
 	}
 
 	private void restoreState(Bundle savedInstanceState) {
@@ -239,23 +227,23 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 	}
 
 	// 0 is admin, 1 is user
-		private void resetFeedback(int which) {
-			int feedbackToReset = 0;
-			if (which == 0) {
-				feedbackToReset = R.id.newAdminPasswordFeedback;
-			} else {
-				feedbackToReset = R.id.newUserPasswordFeedback;
-			}
-			TextView feedback = (TextView) rootView.findViewById(feedbackToReset);
-			feedback.setText("");
+	private void resetFeedback(int which) {
+		int feedbackToReset = 0;
+		if (which == 0) {
+			feedbackToReset = R.id.newAdminPasswordFeedback;
+		} else {
+			feedbackToReset = R.id.newUserPasswordFeedback;
 		}
+		TextView feedback = (TextView) rootView.findViewById(feedbackToReset);
+		feedback.setText("");
+	}
 
 	private boolean updateAdminPassword(String password, String confirmPassword) {
 
 		return PasswordHandler.getInstance().changeAdminPassword(getActivity(),
 				password, confirmPassword);
 	}
-	
+
 	private boolean updateUserPassword(String password, String confirmPassword) {
 		return PasswordHandler.getInstance().changeUserPassword(getActivity(),
 				password, confirmPassword);
@@ -316,5 +304,4 @@ public class AdministrationFragment extends Fragment implements OnTouchListener 
 		super.onStop();
 		hideVirtualKeyboard();
 	}
-
 }

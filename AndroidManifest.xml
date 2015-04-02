@@ -17,7 +17,6 @@
 
     <!-- ActivityManager -->
     <uses-permission android:name="android.permission.GET_TASKS" />
-    <!-- <uses-permission android:name="android.permission.REMOVE_TASKS"/> -->
     <uses-permission android:name="android.permission.GET_DETAILED_TASKS" />
     <uses-permission android:name="android.permission.REORDER_TASKS" />
     <uses-permission android:name="android.permission.START_ANY_ACTIVITY" />
@@ -42,7 +41,8 @@
             android:name=".MainActivity"
             android:configChanges="orientation|screenSize"
             android:label="@string/app_name"
-            android:launchMode="singleTask" >
+            android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -67,8 +67,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.lqc.mylocalguide.services.KeepApplicationInFront" />
-        <service android:name="com.lqc.mylocalguide.services.CheckWichApplicationIsFocused" />
+        <service android:name="com.lqc.mylocalguide.services.BaseKeepApplicationInFront" />
+        <service android:name="com.lqc.mylocalguide.services.OutOfApplicationService" />
+        <service android:name="com.lqc.mylocalguide.services.SettingsLevelService" />
     </application>
 
 </manifest>
